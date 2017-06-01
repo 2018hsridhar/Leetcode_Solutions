@@ -4,8 +4,7 @@ class Solution {
 public:
     vector<vector<int>> matrixReshape(vector<vector<int>>& nums, int r, int c) 
     {
-        int r1 = nums.size();
-        int c1 = nums[0].size();
+        int r1 = nums.size(), c1 = nums[0].size();
         if(r == r1 && c == c1 || r1*c1 != r*c) return nums; 
         std::vector<std::vector<int>> results(r, vector<int>(c, 0));
         int rW = 0, rC = 0;
