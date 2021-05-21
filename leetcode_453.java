@@ -26,7 +26,15 @@ Or say, [1,98,100] = [98,98,197] = [197,197,197] = 97 + 99 = 196 moves total? Ho
 Suppose elements are sorted : thsi will make it easier to process, from the min element to the max element
 
 Idea 1 : does the frequency impact this?
+Idea 2 : Suppose we introduce new element, and then updates it's frequency? What impact does this have?
 
+
+NM([1,2]) = 1
+NM([1,2,2]) = 1 + NM([2,2,3]) = 2
+NM([1,2,2,2]) = 1 + NM([2,2,3,3]) = 2 + NM([3,3,3,4]) = 3
+NM([1,2,2,2,2]) = 1 + NM([2,2,3,3,3]) = 2 + NM([3,3,3,4,4]) = 3 + NM([4,4,4,4,5]) = 4
+
+Notice the increment with each '2' added here
 */
 
 class Solution {
