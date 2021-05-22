@@ -9,7 +9,7 @@ THOUGHT PROCESSES
 3. Vertex visited arrays/sets help with having to choose which new vertex to visit 
 4. Since we can have many topological sorts - we can choose any vertex! Order remains arbitrary
 Fill up ordering, in reverse, via recursive call stacks!
-
+Non-cyclical, directed graphs ( includes trees ) do not neccessarily have an order relation - a top sort helps us set up an order relation
 
 IDEAL : [T,S] = [O(V+E),O(V)]
 CURRENT : 
