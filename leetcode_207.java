@@ -10,6 +10,7 @@ THOUGHT PROCESSES
 4. Since we can have many topological sorts - we can choose any vertex! Order remains arbitrary
 Fill up ordering, in reverse, via recursive call stacks!
 Non-cyclical, directed graphs ( includes trees ) do not neccessarily have an order relation - a top sort helps us set up an order relation
+Based on an implementation of Kahn's Algorithm
 
 IDEAL : [T,S] = [O(V+E),O(V)]
 CURRENT : 
