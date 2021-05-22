@@ -11,6 +11,7 @@ THOUGHT PROCESSES
 Fill up ordering, in reverse, via recursive call stacks!
 Non-cyclical, directed graphs ( includes trees ) do not neccessarily have an order relation - a top sort helps us set up an order relation
 Based on an implementation of Kahn's Algorithm
+5. Is there a means, in the random selection of initial nodes, to pick a node with no dependencies?
 
 IDEAL : [T,S] = [O(V+E),O(V)]
 CURRENT : 
