@@ -22,6 +22,12 @@ Edge Cases
 
 Gotchas
 
+TWO Approaches to attempt coding : 
+1. The normal approach : works backwards
+2. Kahn's algorithms - produces ordering in forward approach, via in-degrees. But requires 'a priori' knowledge, and not as intuitive
 
+Resources for Topological sorting : 
+1. https://www.youtube.com/watch?v=eL-KzMXSXXI&list=PLDV1Zeh2NRsDGO4--qE8yH72HFL1Km93P&index=16
+2. https://www.youtube.com/watch?v=cIBFEhD77b4&list=PLDV1Zeh2NRsDGO4--qE8yH72HFL1Km93P&index=17
 
 */
