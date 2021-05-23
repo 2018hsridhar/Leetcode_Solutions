@@ -59,7 +59,7 @@ class Solution {
 
 
     
-    public boolean canFinish(int numCourses, int[][] prerequisites) 
+     public boolean canFinish(int numCourses, int[][] prerequisites) 
     {
         boolean canFinish = false;
         
@@ -115,15 +115,24 @@ class Solution {
         int[] ordering = new int[numCourses];
         while(!myQ.isEmpty())
         {
-            int at = myQ.pop();
+            int at = myQ.remove();
             ordering[index] = at;
             index++;
-            LinkedList<Integer> neighbors = 
+            ArrayList<Integer> neighbors = adjList[at];
+            for(int nx : neighbors)
+            {
+                in_degree[nx] = in_degree[nx] - 1; // remove current node : subtract in-degree here
+                if(in_degree[nx] == 0)
+                {
+                    myQ.add(nx);
+                }
+            }
         }
         
         
         if(index != numCourses)
             return false;
+        
         return true;
     }
 }
