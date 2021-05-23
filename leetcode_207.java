@@ -38,7 +38,8 @@ class Solution {
     Based on an implementation of Kahn's Algorithm
     5. Is there a means, in the random selection of initial nodes, to pick a node with no dependencies?
 
-    IDEAL : [T,S] = [O(V+E),O(V)]
+    IDEAL : [T,S] = {O(V),O(E),O(V+E)} timings for both - a type of linear time
+    - Notice how Big-O complexity, for these problems, tend to be of three types. Ideally, we choose O(V) or O(E), based on the number of vertices or edges of the graph.
     CURRENT : 
 
     Base cases 
@@ -50,14 +51,16 @@ class Solution {
     TWO Approaches to attempt coding : 
     1. The normal approach : works backwards
     2. Kahn's algorithms - produces ordering in forward approach, via in-degrees. But requires 'a priori' knowledge, and not as intuitive
+    - drawback : needs in-degree information known ahead of time to be constructed, and additional space allocated.
 
     Resources for Topological sorting : 
     1. https://www.youtube.com/watch?v=eL-KzMXSXXI&list=PLDV1Zeh2NRsDGO4--qE8yH72HFL1Km93P&index=16
     2. https://www.youtube.com/watch?v=cIBFEhD77b4&list=PLDV1Zeh2NRsDGO4--qE8yH72HFL1Km93P&index=17
 
     */
-
-
+    
+    // #TODO : attempt to code the normal approach. Kahn's approach was coded here.
+    
     
      public boolean canFinish(int numCourses, int[][] prerequisites) 
     {
