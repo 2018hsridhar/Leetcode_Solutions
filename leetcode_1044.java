@@ -9,6 +9,7 @@
     2. https://www.youtube.com/watch?v=oxd_Z1osgCk&t=487s
     3. https://www.tutorialcup.com/interview/string/rabin-karp-algorithm.htm
     4. https://www.youtube.com/watch?v=H4VrKHVG5qI
+    - focus on Tuschar Roy's video : made sense of the hash function with primes the best
     
     Rabin-Karp : Easiest of the algorithms
     
