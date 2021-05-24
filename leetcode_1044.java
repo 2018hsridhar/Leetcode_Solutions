@@ -1,3 +1,6 @@
+
+
+
 class Solution {
     
     /*
@@ -11,6 +14,11 @@ class Solution {
         
         Space Complexity : 
             O(1) 
+            
+        Links : 
+        1. https://github.com/mission-peace/interview/blob/master/src/com/interview/string/RabinKarpSearch.java
+        2. https://www.youtube.com/watch?v=H4VrKHVG5qI&t=908s
+        3. https://en.wikipedia.org/wiki/Rabin%E2%80%93Karp_algorithm
             
      */
     
