@@ -1,5 +1,7 @@
 // PROBLEM : 323. Number of Connected Components in an Undirected Graph
 // HYPERLINK : https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/
+// Solution can still technically work without storing a sizes array or testing both roots by their sizes
+// Additionaly, DSUF algorithm can be understand as checking whether to combine to trees or not
 
 class Solution {
     
