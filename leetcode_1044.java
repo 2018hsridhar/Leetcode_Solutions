@@ -19,7 +19,6 @@
     https://leetcode.com/problems/longest-duplicate-substring/
 
  */
-
 class Solution {
     
     
@@ -37,9 +36,44 @@ class Solution {
     
     public String longestDupSubstring(String s) 
     {
-        String pattern = "abe";
-        int initHash = computeInitHash(pattern);
-        System.out.printf("For string pattern = %s, initHash = [%d]\n", pattern, initHash);
+        // A test string input here is "banana"
+        String pattern = "ana";
+        
+        int M = pattern.length();
+        int N = s.length();
+        
+        int hash = computeInitHash(pattern);
+        // System.out.printf("For string pattern = %s, initHash = [%d]\n", pattern, initHash);
+        
+        char[] sArr = s.toCharArray();
+        StringBuilder sb = new StringBuilder("");
+        
+        for(int i = 0; i < M;++i)
+        {
+            sb.append(sArr[i]);
+        }
+        System.out.printf("substr = [%s] \t hash = [%d]\n", sb.toString(), hash);
+        
+        for(int i = M; i < N; ++i)
+        {
+            int firstCharIdx = i - M;
+            // System.out.printf("firstCharIdx = %d\n", firstCharIdx);
+            char firstCharInSubStr = sb.charAt(0);
+            char nextChar = sArr[i];
+            sb.deleteCharAt(0);
+            sb.append(nextChar);
+            
+            // COMPUTE NEW HASH
+            int newX = hash - (firstCharInSubStr - 'a' + 1);
+            newX /= prime;
+            newX += Math.pow(prime, M-1) * (nextChar - 'a' + 1);
+            hash = newX;
+            System.out.printf("substr = [%s] \t hash = [%d]\n", sb.toString(), hash);
+            
+            // System.out.printf("substring = %s\n", sb.toString());
+        }
+        
+        
         return pattern;
     }
     
