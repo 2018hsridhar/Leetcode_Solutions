@@ -7,8 +7,10 @@
     Hyperlinks for the Rabin-Karp Algorithm : 
     1. https://www.youtube.com/watch?v=BQ9E-2umSWc
     2. https://www.youtube.com/watch?v=oxd_Z1osgCk&t=487s
-    3.
+    3. https://www.tutorialcup.com/interview/string/rabin-karp-algorithm.htm
     
+    First, try the naive hash method for the rolling hash
+    Then experiment with a more complicated hash
 
  */
 
