@@ -1,11 +1,17 @@
 class Solution {
     
-    
     /*
     
         Attempt a solution via the Rabin Karp Substring Algorithm
-    
-    
+        Basic one : Uses prime operations   
+        Time Complexity 
+            M = Pattern Length, N = String Length
+            Best case : O(M+N) - suppose only one string match max. Then O(M) iterate over single pattern, O(N) = long string iteration
+            Worst case : O(MN)- supposes we match each substring in the pattern ( e.g. "a" = pattern, "aaaaaaaaaaaa" = string )
+        
+        Space Complexity : 
+            O(1) 
+            
      */
     
     // used everywhere in program : thus make it a global variable ( not a function variable ) 
@@ -22,18 +28,14 @@ class Solution {
         int N = s.length();
         
         int patternHash = computeInitHash(pattern);
-        // System.out.printf("For string pattern = %s, initHash = [%d]\n", pattern, hash);
         
         char[] sArr = s.toCharArray();
         StringBuilder sb = new StringBuilder("");
-        
         for(int i = 0; i < M;++i)
-        {
             sb.append(sArr[i]);
-        }
         int stringHash = computeInitHash(sb.toString());
-        System.out.printf("substr = [%s] \t hash = [%d]\n", sb.toString(), stringHash);
         
+        ArrayList<Integer> matchHits = new ArrayList<Integer>();
         for(int i = M; i < N; ++i)
         {
             int firstCharIdx = i - M;
@@ -48,10 +50,21 @@ class Solution {
             newX /= prime;
             newX += Math.pow(prime, M-1) * (nextChar - 'a' + 1);
             stringHash = newX;
-            System.out.printf("substr = [%s] \t hash = [%d]\n", sb.toString(), stringHash);
             
-            // System.out.printf("substring = %s\n", sb.toString());
+            if(stringHash == patternHash)
+            {
+                // check pure string equality
+                String substr = sb.toString();
+                if(substr.equals(pattern))
+                {
+                    matchHits.add(i - M + 1);
+                }
+            }
         }
+        
+        System.out.printf("Hits = %s\n", matchHits.toString());
+        
+        
         
         
         return pattern;
