@@ -169,14 +169,9 @@ class Solution {
         return manDist;
     }
     
-    public int minCostConnectPoints(int[][] points) 
+    // Weighted-edge list too : expect K_N=n(n-1)/2 number edges to output
+    public void constructSortedEdgeList(ArrayList<Edge> edgeList, int[][] points)
     {
-        int minCost = 0; // 0 = default minimum cost 
-        
-        // STEP 1 : CREATE AND SORT THE WEIGHTED-EDGE LIST
-        // Weighted-edge list too : expect K_N=n(n-1)/2 number edges to outpuht
-        
-        ArrayList<Edge> edgeList = new ArrayList<Edge>();
         int V = points.length;
         for(int i = 0; i < V; ++i)
         {
@@ -185,21 +180,22 @@ class Solution {
             {
                 int[] dstPoint = points[j];
                 double dist = getManhattanDist(srcPoint, dstPoint);
-                // System.out.printf("srcEdge = %s, dstEdge = %s, dist = %f\n", i, j, dist);
                 Edge newEdge = new Edge(i,j,dist);
                 edgeList.add(newEdge);
             }
         }
-        int E = edgeList.size();
-        
         Collections.sort(edgeList);
-         
-        // Part 2 : Iterate over edge list, starting at min edge weight
-        // check if edge can be added to MST, without creating a cycle in the undirected graph
-        // Verify via count of edges too = (n-1)
-        
+    }
+
+    // check if edge can be added to MST, without creating a cycle in the undirected graph
+    // Verify via count of edges too = (n-1)
+
+    public int generateMSTMinCost(ArrayList<Edge> edgeList, int[][] points)
+    {
+        int minCost = 0;
+        int E = edgeList.size();
+        int V = points.length;
         UnionFind uf = new UnionFind(V);
-        int countE = 0;
         int i = 0;
         while(i < E )
         {
@@ -208,12 +204,23 @@ class Solution {
             {
                 uf.unify(e.src,e.dest);
                 minCost += e.weight;
-                ++countE;
             }
             ++i;
         }
+        return minCost;
+    }  
+
+    public int minCostConnectPoints(int[][] points) 
+    {
+        int minCost = 0; // 0 = default minimum cost 
         
+        // STEP 1 : CREATE AND SORT THE WEIGHTED-EDGE LIST
+        ArrayList<Edge> edgeList = new ArrayList<Edge>();
+        constructSortedEdgeList(edgeList, points);
         
+         
+        // Part 2 : Iterate over edge list, starting at min edge weight
+        minCost = generateMSTMinCost(edgeList, points);
         return minCost;
     }
 }
