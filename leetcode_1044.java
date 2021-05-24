@@ -1,24 +1,3 @@
-// 1044. Longest Duplicate Substring
-
-/* 
-    The Rabin-Karp Algorithm is an underlying component to the solution of this problem
-    Attempt to first code up Rabin-Karp
-    
-    Hyperlinks for the Rabin-Karp Algorithm : 
-    1. https://www.youtube.com/watch?v=BQ9E-2umSWc
-    2. https://www.youtube.com/watch?v=oxd_Z1osgCk&t=487s
-    3. https://www.tutorialcup.com/interview/string/rabin-karp-algorithm.htm
-    4. https://www.youtube.com/watch?v=H4VrKHVG5qI
-    - focus on Tuschar Roy's video : made sense of the hash function with primes the best
-    
-    Rabin-Karp : Easiest of the algorithms
-    
-    First, try the naive hash method for the rolling hash
-    Then experiment with a more complicated hash
-    
-    https://leetcode.com/problems/longest-duplicate-substring/
-
- */
 class Solution {
     
     
@@ -42,8 +21,8 @@ class Solution {
         int M = pattern.length();
         int N = s.length();
         
-        int hash = computeInitHash(pattern);
-        // System.out.printf("For string pattern = %s, initHash = [%d]\n", pattern, initHash);
+        int patternHash = computeInitHash(pattern);
+        // System.out.printf("For string pattern = %s, initHash = [%d]\n", pattern, hash);
         
         char[] sArr = s.toCharArray();
         StringBuilder sb = new StringBuilder("");
@@ -52,7 +31,8 @@ class Solution {
         {
             sb.append(sArr[i]);
         }
-        System.out.printf("substr = [%s] \t hash = [%d]\n", sb.toString(), hash);
+        int stringHash = computeInitHash(sb.toString());
+        System.out.printf("substr = [%s] \t hash = [%d]\n", sb.toString(), stringHash);
         
         for(int i = M; i < N; ++i)
         {
@@ -64,11 +44,11 @@ class Solution {
             sb.append(nextChar);
             
             // COMPUTE NEW HASH
-            int newX = hash - (firstCharInSubStr - 'a' + 1);
+            int newX = stringHash - (firstCharInSubStr - 'a' + 1);
             newX /= prime;
             newX += Math.pow(prime, M-1) * (nextChar - 'a' + 1);
-            hash = newX;
-            System.out.printf("substr = [%s] \t hash = [%d]\n", sb.toString(), hash);
+            stringHash = newX;
+            System.out.printf("substr = [%s] \t hash = [%d]\n", sb.toString(), stringHash);
             
             // System.out.printf("substring = %s\n", sb.toString());
         }
@@ -88,6 +68,7 @@ class Solution {
         {
             int myValue = (c_arr[i] - 'a' + 1);
             int nextDig = myValue * (int)Math.pow(prime,pow);
+            // System.out.printf("Dig = %d\n", nextDig);
             initHash += nextDig;
             ++pow;
         }    
