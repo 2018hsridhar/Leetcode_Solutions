@@ -20,6 +20,15 @@ class Solution {
         2. https://www.youtube.com/watch?v=H4VrKHVG5qI&t=908s
         3. https://en.wikipedia.org/wiki/Rabin%E2%80%93Karp_algorithm
             
+        Notes on hashing algorithm : 
+        
+            Primes associated with randomness due to their difficulty in factorization
+            
+            Rolling hashes are used in cryptographic schemes
+            I reviewed a string matching algorithm which uses the "rolling hash" technique
+            It takes a value, scales it by a prime raised to a large power, and then modulos this result
+            Modulo operation - helps to prevent integer/data overflow, but, restricts range of randomness of the has variable to [1,m], where m = number you modulo by
+            It is difficult to discover large prime numbers.
      */
     
     // used everywhere in program : thus make it a global variable ( not a function variable ) 
