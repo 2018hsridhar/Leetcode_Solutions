@@ -70,14 +70,7 @@ class Solution {
             adj.get(src).add(p2);             // makes sense : array list are objects - no operators defined a top them!
             adj.get(dst).add(p1);             // makes sense : array list are objects - no operators defined a top them!
         }
-                
-        // print adj list
-        for(int i = 0; i < adj.size(); ++i )
-        {
-            ArrayList<Pair<Integer,Integer>> myCur = adj.get(i);
-            System.out.println(myCur.toString());
-        }
-        
+
         int V = n;
         visited = new boolean[V];
         pq = new PriorityQueue<Edge>(new EdgeComparator());
