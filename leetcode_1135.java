@@ -11,6 +11,15 @@
     - also messy since adj list must store both (dest,weight) for each vertex! wow!
     
     Utilize object serialization/tostring methods for quick debugging
+    
+    This is an out-degree of each node algorithm, working in real time sorting! Hence the optimization
+    Q : Why is the worst case performance O(ElogV) and not O(ElogE)?
+    A : Your sort takes placeat each node in real-time, not across the entirety of the edge set, and the maximum out degree of a given node can equal only (V-1), as we possess V 
+    nodes in our graph ( assuming no double connections or self-loops ). During this (V-1) processing, each weight on that edge may or may not be pronounced stale too.
+    
+    Notice how bounds of a graph performance may be O(V) something, since max out/in degrees of vertices equals (V-1)
+    Ideally, we can approach that out degree maximum
+    
     */
     
     
