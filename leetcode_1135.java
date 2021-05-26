@@ -55,18 +55,40 @@ class Solution {
         int s = 0; // denotes the starting node
         
         PriorityQueue<Edge> pq = new PriorityQueue<Edge>(new EdgeComparator());
+        
+        // add the first node's edges ( node 0 here )
+        // must iterate over edge list to option this!
+        // set up adjacency list early on!
+        
+        ArrayList<ArrayList<Integer> > adj = new ArrayList<ArrayList<Integer> >(V);
+        for (int i = 0; i < n; i++)
+        {
+            adj.add(new ArrayList<Integer>());    
+        }
         for(int i = 0; i < connections.length; ++i)
         {
-            int[] edge = connections[i];
-            Edge e = new Edge(edge[0],edge[1],edge[2]);
-            pq.add(e);
+            int src = connections[i][0];
+            int dst = connections[i][1];
+            adj[src].add(dst);            
         }
         
-        while(pq.size() != 0)
-        {
-            Edge e = pq.remove();
-            System.out.println(e.toString());
-        }
+        
+        
+        
+  
+        
+//         for(int i = 0; i < connections.length; ++i)
+//         {
+//             int[] edge = connections[i];
+//             Edge e = new Edge(edge[0],edge[1],edge[2]);
+//             pq.add(e);
+//         }
+        
+//         while(pq.size() != 0)
+//         {
+//             Edge e = pq.remove();
+//             System.out.println(e.toString());
+//         }
         return minCost;
     }
         
