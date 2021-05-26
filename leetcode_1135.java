@@ -36,8 +36,7 @@ class Solution {
                 
         public String toString()
         {
-            String s = this.src + ", " + this.dst + ", " + this.cost;
-            return s;
+            return this.src + ", " + this.dst + ", " + this.cost;
         }
     }
     
@@ -55,16 +54,6 @@ class Solution {
     
     public int minimumCost(int n, int[][] connections) 
     {
-        return lazyPrims(n,connections);
-        
-        
-        
-    }
-    
-    public int lazyPrims(int n, int[][] connections)
-    {
-
-        
         adj = new ArrayList<ArrayList<Pair<Integer,Integer>> >(n);
         for (int i = 0; i < n; i++)
             adj.add(new ArrayList<Pair<Integer,Integer>>());    
@@ -86,16 +75,17 @@ class Solution {
         for(int i = 0; i < adj.size(); ++i )
         {
             ArrayList<Pair<Integer,Integer>> myCur = adj.get(i);
+            System.out.println(myCur.toString());
         }
         
         int V = n;
         visited = new boolean[V];
-        int edgeCount = 0; // count up to (V-1) edges for termination
-        int m = V - 1; // max number of edges
-        Edge[] mstEdges = new Edge[m];
-        int mstCost = 0; // not negative 1 : always a cost is 0, until the end
-
         pq = new PriorityQueue<Edge>(new EdgeComparator());
+
+        int m = V - 1; // max number of edges
+        int edgeCount = 0; // count up to (V-1) edges for termination
+        int mstCost = 0; // not negative 1 : always a cost is 0, until the end
+        Edge[] mstEdges = new Edge[m];
         addEdges(0);
         
         // add the first node's edges ( node 0 here )
@@ -107,12 +97,9 @@ class Solution {
             int nextNode = e.dst;
             
             if(visited[nextNode])
-            {
                 continue;
-            }
             
-            mstEdges[edgeCount] = e;
-            edgeCount++;
+            mstEdges[edgeCount++] = e;
             mstCost += e.cost;
                 
             addEdges(nextNode);
@@ -130,16 +117,9 @@ class Solution {
         visited[x] = true; // starting visitations from this edge!
         ArrayList<Pair<Integer,Integer>> edges = adj.get(x);
 
-        for(int i = 0; i < edges.size(); ++i)
-        {
-            Pair<Integer,Integer> outgoing = edges.get(i);
+        for(Pair<Integer,Integer> outgoing : edges )
             if(!visited[outgoing.getKey()])
-            {
-                Edge newOut = new Edge(x, outgoing.getKey(), outgoing.getValue());
-                pq.add(newOut);
-            }
-        }
-           
+                pq.add(new Edge(x, outgoing.getKey(), outgoing.getValue()));
     }
     
 }
