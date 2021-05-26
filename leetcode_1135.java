@@ -1,12 +1,25 @@
-class Solution {
-    
-    /*
+/*
     
     Code up PRIM'S ALGORITHM HERE IN PLACE OF KRUSHKAL'S ALGORITHM
     
     URL = https://www.youtube.com/watch?v=jsmMtJpPnhU&list=RDCMUCD8yeTczadqdARzQUp29PJw&start_radio=1&rv=jsmMtJpPnhU&t=0
+    https://www.geeksforgeeks.org/prims-mst-for-adjacency-list-representation-greedy-algo-6/
     
+    Issues : 
+    Requires serious amount of coding upfront : does not work well if provided input is a weighted edge list
+    - Krushkal's implementation remains the faster one
+    - also messy since adj list must store both (dest,weight) for each vertex! wow!
+    
+    Utilize object serialization/tostring methods for quick debugging
     */
+    
+    
+// 51/63 test cases passed here
+
+class Solution {
+    boolean visited[];
+    PriorityQueue<Edge> pq;
+    ArrayList<ArrayList<Pair<Integer,Integer>> > adj;
     
     public class Edge
     {
@@ -50,52 +63,83 @@ class Solution {
     
     public int lazyPrims(int n, int[][] connections)
     {
-        int minCost = -1;
-        int edgeCount = 0; // count up to (V-1) edges for termination
-        int s = 0; // denotes the starting node
+
         
-        PriorityQueue<Edge> pq = new PriorityQueue<Edge>(new EdgeComparator());
+        adj = new ArrayList<ArrayList<Pair<Integer,Integer>> >(n);
+        for (int i = 0; i < n; i++)
+            adj.add(new ArrayList<Pair<Integer,Integer>>());    
+
+        for(int i = 0; i < connections.length; ++i)
+        {
+            int src = connections[i][0] - 1;
+            int dst = connections[i][1] - 1;
+            int weight = connections[i][2];
+            
+            Pair<Integer,Integer> p1 = new Pair<Integer,Integer>(src,weight);
+            Pair<Integer,Integer> p2 = new Pair<Integer,Integer>(dst,weight);
+            
+            adj.get(src).add(p2);             // makes sense : array list are objects - no operators defined a top them!
+            adj.get(dst).add(p1);             // makes sense : array list are objects - no operators defined a top them!
+        }
+                
+        // print adj list
+        for(int i = 0; i < adj.size(); ++i )
+        {
+            ArrayList<Pair<Integer,Integer>> myCur = adj.get(i);
+        }
+        
+        int V = n;
+        visited = new boolean[V];
+        int edgeCount = 0; // count up to (V-1) edges for termination
+        int m = V - 1; // max number of edges
+        Edge[] mstEdges = new Edge[m];
+        int mstCost = 0; // not negative 1 : always a cost is 0, until the end
+
+        pq = new PriorityQueue<Edge>(new EdgeComparator());
+        addEdges(0);
         
         // add the first node's edges ( node 0 here )
         // must iterate over edge list to option this!
-        // set up adjacency list early on!
-        
-        ArrayList<ArrayList<Integer> > adj = new ArrayList<ArrayList<Integer> >(V);
-        for (int i = 0; i < n; i++)
+
+        while(pq.size() != 0)
         {
-            adj.add(new ArrayList<Integer>());    
+            Edge e = pq.remove();
+            int nextNode = e.dst;
+            
+            if(visited[nextNode])
+            {
+                continue;
+            }
+            
+            mstEdges[edgeCount] = e;
+            edgeCount++;
+            mstCost += e.cost;
+                
+            addEdges(nextNode);
         }
-        for(int i = 0; i < connections.length; ++i)
-        {
-            int src = connections[i][0];
-            int dst = connections[i][1];
-            adj[src].add(dst);            
-        }
         
+        // check proper edge count has been reached
+        if(edgeCount != m)
+            return -1;
         
-        
-        
-  
-        
-//         for(int i = 0; i < connections.length; ++i)
-//         {
-//             int[] edge = connections[i];
-//             Edge e = new Edge(edge[0],edge[1],edge[2]);
-//             pq.add(e);
-//         }
-        
-//         while(pq.size() != 0)
-//         {
-//             Edge e = pq.remove();
-//             System.out.println(e.toString());
-//         }
-        return minCost;
+        return mstCost;
     }
-        
     
-    // in future : eagerPrims
-//     public int eagerPrims()
-//     {
-        
-//     }
+    public void addEdges(int x)
+    {
+        visited[x] = true; // starting visitations from this edge!
+        ArrayList<Pair<Integer,Integer>> edges = adj.get(x);
+
+        for(int i = 0; i < edges.size(); ++i)
+        {
+            Pair<Integer,Integer> outgoing = edges.get(i);
+            if(!visited[outgoing.getKey()])
+            {
+                Edge newOut = new Edge(x, outgoing.getKey(), outgoing.getValue());
+                pq.add(newOut);
+            }
+        }
+           
+    }
+    
 }
