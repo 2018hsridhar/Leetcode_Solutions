@@ -1,127 +1,161 @@
+
 /*
+
+    OTHER LINKS : 
+    1. https://en.wikipedia.org/wiki/Gift_wrapping_algorithm
+    Is known as the Jarvis March in the 2D case
+    Performs well when <n> and <h> are minimized
     
-    Code up PRIM'S ALGORITHM HERE IN PLACE OF KRUSHKAL'S ALGORITHM
+    Handling case of three collinear points ( assuming they are in general position ) 
+    Report extreme points or all points ? Extreme = are strictly vertexes of the convex hull
     
-    URL = https://www.youtube.com/watch?v=jsmMtJpPnhU&list=RDCMUCD8yeTczadqdARzQUp29PJw&start_radio=1&rv=jsmMtJpPnhU&t=0
-    https://www.geeksforgeeks.org/prims-mst-for-adjacency-list-representation-greedy-algo-6/
+    Convergence is establishable inductively : we know we must hit, or not, the (n-1) points away
+    Intuition : tauting a string about a set of points on a 2D-plane
     
-    Issues : 
-    Requires serious amount of coding upfront : does not work well if provided input is a weighted edge list
-    - Krushkal's implementation remains the faster one
-    - also messy since adj list must store both (dest,weight) for each vertex! wow!
+    Any while loop requires a breakpoint : otherwise, can not escsape out of infinite iteration
+    If all points are collinear, the convex hull results in a straight line
     
-    Utilize object serialization/tostring methods for quick debugging
+    Base cases of convex hull : a trianle or two points on a line
     
-    This is an out-degree of each node algorithm, working in real time sorting! Hence the optimization
-    Q : Why is the worst case performance O(ElogV) and not O(ElogE)?
-    A : Your sort takes placeat each node in real-time, not across the entirety of the edge set, and the maximum out degree of a given node can equal only (V-1), as we possess V 
-    nodes in our graph ( assuming no double connections or self-loops ). During this (V-1) processing, each weight on that edge may or may not be pronounced stale too.
-    
-    Notice how bounds of a graph performance may be O(V) something, since max out/in degrees of vertices equals (V-1)
-    Ideally, we can approach that out degree maximum
-    
-    */
-    
-    
-// 51/63 test cases passed here
+    THOUGHT PROCSESES 
+*/
+
 
 class Solution {
-    boolean visited[];
-    PriorityQueue<Edge> pq;
-    ArrayList<ArrayList<Pair<Integer,Integer>> > adj;
-    
-    public class Edge
+    public int[][] outerTrees(int[][] trees) 
     {
-        int src;
-        int dst;
-        int cost;
-        
-        public Edge(int _src, int _dst, int _cost)
+
+        // ESTABLISH the left-most points
+        int[] leftMostPoint = trees[0];
+        int leftMostPointIdx = 0;
+        for(int i = 1; i < trees.length; ++i )
         {
-            this.src = _src;
-            this.dst = _dst;
-            this.cost = _cost;
+            int[] curPoint = trees[i];
+            if(curPoint[0] < leftMostPoint[0])
+            {
+                leftMostPointIdx = i;                
+                leftMostPoint = curPoint;
+            }
         }
+        
+        
+        // System.out.printf("Left Most Point = [%d,%d]\n", leftMostPoint[0], leftMostPoint[1]);
+        // You may wrap aroudn an already existing point! do take note of this!
+        // Difficulty in code : cross product needs 2 lines/3 points, and in first iteration, you work with only  2 points
+        // first line will actually be with itself!
+        
+        
+        // First, get pseudo code out
+        // Then focus on figuring out how to code the algo!
+        
+        
+        // We know the hull bound is the length of the trees, but still use an array list here
+        // Remember : it is a 2-point algorithm here
+        // Better : pick the second initially point more randomly ( once Left most point has been established here )
+        
+        // Pick a second random point, index not the first random point
+        int[] secondPoint = trees[0];
+        for(int i = 1; i < trees.length; ++i )
+        {
+            int[] myPoint = trees[i];
+            if(equalPoints(curPoint, leftMostPoint) == false)
+                secondPoint = myPoint;
+        }
+        
+        ArrayList<int[]> jarvisMarchPoints = new ArrayList<int[]>();
+        TreeSet<Integer> collinearPoints = new TreeSet<Integer>();
+        int[][] results = new int[trees.length][2];
+        int[] curPoint = leftMostPoint; // the starting point
+        while(true)
+        {
+            int[] nextLMP = new int[2];
+            for(int i = 0; i < trees.length; ++i)
+            {
+                nextLMP = trees[i];
+                int crossProd = crossProduct(curPoint, secondPoint, nextLMP);
+                if(crossProd < 0)
+                {
+                    secondPoint = nextLMP;
+                }
+                else if ( crossProd == 0 )
+                {
+                    // check colinear points set
+                    for(int j = 0; j < collinearPoints.size(); ++j)
+                    {
+                        int[] myColPoint = collinearPoints[j];
+                        if(distance(curPoint, secondPoint, nextLMP) == 1)
+                        {
+                            collinearPoints.add(nextLMP); // both values are collinear                        
+                        }
+                        {
+                        else // -1 case : second point/midpoint remains closer
+                        {
+                            collinearPoints.add(secondPoint);
+                        }
+                    }
+                }
+                else
+                    continue; // point is not to the left of the current axis
+
+            }
                 
-        public String toString()
-        {
-            return this.src + ", " + this.dst + ", " + this.cost;
+                                
+            // ADD ALL COLLINEAR POINTS AT END OF EACH ITERATION
+            if(collinearPoints.size() > 0)
+            {
+                Iterator<Integer> it = collinearPoints.iterator();
+                while(it.hasNext())
+                    jarvisMarchPoints.add(collinearPoints.next());
+                }
+                collinearPoints.clear();
+            }
+            
+            // Check if nextLMP = leftMostPoint here
+            if(equalPoints(nextLMP, leftMostPoint))
+                break;
+            
+            curPoint = nextLMP; // continue algorithm
         }
+    
+        // Broke from while loop since nextLMP = leftMostPoint
+        // unlike the regular JMP algorithm, do not add back the original tree here!
+        // jarvisMarchPoints.add(leftMostPoint);
+        
+        for(int i = 0; i < jarvisMarchPoints.size(); ++i)
+        {
+            int[] myPoint = jarvisMarchPoints.get(i);
+            results[i][0] = myPoint[0];
+            results[i][1] = myPoint[1];
+        }
+        return results;
     }
     
-    public class EdgeComparator implements Comparator<Edge>
+    // \textit{ab} \cross \textit{ac}
+    public int crossProduct(int[] a, int[] b, int[] c)
     {
-        public int compare(Edge e1, Edge e2)
-        {
-            if(e1.cost < e2.cost)
-                return -1;
-            else if (e1.cost > e2.cost )
-                return 1;
-            return 0;
-        }
+        int x1 = a[0]-b[0];
+        int x2 = a[0]-c[0];
+        int x3 = a[1]-b[1];
+        int x4 = a[1]-c[1];
     }
     
-    public int minimumCost(int n, int[][] connections) 
+    // check which point is closer to point a : {b,c}
+    // return the point
+    public int distance(int[] a, int[] b, int[] c)
     {
-        adj = new ArrayList<ArrayList<Pair<Integer,Integer>> >(n);
-        for (int i = 0; i < n; i++)
-            adj.add(new ArrayList<Pair<Integer,Integer>>());    
-
-        for(int i = 0; i < connections.length; ++i)
-        {
-            int src = connections[i][0] - 1;
-            int dst = connections[i][1] - 1;
-            int weight = connections[i][2];
-            
-            Pair<Integer,Integer> p1 = new Pair<Integer,Integer>(src,weight);
-            Pair<Integer,Integer> p2 = new Pair<Integer,Integer>(dst,weight);
-            
-            adj.get(src).add(p2);             // makes sense : array list are objects - no operators defined a top them!
-            adj.get(dst).add(p1);             // makes sense : array list are objects - no operators defined a top them!
-        }
-
-        int V = n;
-        visited = new boolean[V];
-        pq = new PriorityQueue<Edge>(new EdgeComparator());
-
-        int m = V - 1; // max number of edges
-        int edgeCount = 0; // count up to (V-1) edges for termination
-        int mstCost = 0; // not negative 1 : always a cost is 0, until the end
-        Edge[] mstEdges = new Edge[m];
-        addEdges(0);
+        double dist_ab = Math.sqrt(Math.pow(a[0] - b[0],2) + Math.pow(a[1] - c[1],2));
+        double dist_ac = Math.sqrt(Math.pow(a[0] - c[0],2) + Math.pow(a[1] - c[1],2));
         
-        // add the first node's edges ( node 0 here )
-        // must iterate over edge list to option this!
-
-        while(pq.size() != 0)
-        {
-            Edge e = pq.remove();
-            int nextNode = e.dst;
-            
-            if(visited[nextNode])
-                continue;
-            
-            mstEdges[edgeCount++] = e;
-            mstCost += e.cost;
-                
-            addEdges(nextNode);
-        }
-        
-        // check proper edge count has been reached
-        if(edgeCount != m)
-            return -1;
-        
-        return mstCost;
+        if(dist_ac >= dist_ab )
+            return 1;
+        return -1;
     }
     
-    public void addEdges(int x)
+    public boolean equalPoints(int[] p1, int[] p2)
     {
-        visited[x] = true; // starting visitations from this edge!
-        ArrayList<Pair<Integer,Integer>> edges = adj.get(x);
-
-        for(Pair<Integer,Integer> outgoing : edges )
-            if(!visited[outgoing.getKey()])
-                pq.add(new Edge(x, outgoing.getKey(), outgoing.getValue()));
+        if(p1[0] == p2[0] && p1[1] == p2[1])
+            return true;
+        return false;
     }
     
 }
