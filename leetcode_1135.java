@@ -11,6 +11,11 @@
     - also messy since adj list must store both (dest,weight) for each vertex! wow!
     
     Utilize object serialization/tostring methods for quick debugging
+    
+    The benefits of PRIM'S algo, is that you need not sort ahead of time ( avoid ElogE operation )
+    Sort as you go instead
+    
+    
     */
     
     
