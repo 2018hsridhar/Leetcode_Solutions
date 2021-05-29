@@ -1,9 +1,5 @@
 
 /*
-
-    LEETCODE 1804 : IMPLEMENT TRIE II ( PREFIX TREE ) 
-    URL = https://leetcode.com/problems/implement-trie-ii-prefix-tree/
-    
     THOUGHT PROCESSES FOR IMPLEMENTING A TRIE ( PREFIX TREE ) 
     Wait ... does this later lead down to prefix arrays?
     
@@ -68,7 +64,7 @@ class Trie
         for(int i = 0; i < c_arr.length; ++i)
         {
             char myC = c_arr[i];
-            int cIdx = myC - 'a' + 1;
+            int cIdx = myC - 'a';
             // System.out.printf("For char = %s \t cIDx = %d\n", myC, cIdx);
             // System.out.println(curNode.children.length);
             if(curNode.children[cIdx] == null) // make new node in the tree!
@@ -97,7 +93,7 @@ class Trie
         for(int i = 0; i < c_arr.length; ++i)
         {
             char myC = c_arr[i];
-            int cIdx = myC - 'a' + 1;
+            int cIdx = myC - 'a';
             if(curNode.children[cIdx] == null) // word does not exist - break
             {
                 return 0;
@@ -116,14 +112,22 @@ class Trie
     
     public int countWordsStartingWith(String prefix) 
     {
+        if(prefix.equals("") || prefix == null)
+        {
+            System.out.println("here\n");
+            return 1; // root by default
+        }
+        // System.out.printf("prefix = %s\n", prefix);
         Node curNode = rootNode;
         char[] c_arr = prefix.toCharArray();
         for(int i = 0; i < c_arr.length; ++i)
         {
             char myC = c_arr[i];
-            int cIdx = myC - 'a' + 1;
+            int cIdx = myC - 'a';
+            // System.out.printf("myC = %s cIdx  %d", myC, cIdx);
             if(curNode.children[cIdx] == null) // word ( or its other prefixes ) does not exist
             {
+                System.out.println("here");
                 return 0;
             }
             else // continue on tree path
@@ -161,13 +165,38 @@ class Trie
     
     public void erase(String word) 
     {
-        int countOfWord = countWordsEqaulTo(word);
+        Node curNode = rootNode;
+        char[] c_arr = word.toCharArray();
+            
+        int countOfWord = countWordsEqualTo(word); // we already have the guarantee of existence - this was not needed
+        
         if(countOfWord > 1)
         {
-            
+            for(int i = 0; i < c_arr.length; ++i)
+            {
+                char myC = c_arr[i];
+                int cIdx = myC - 'a';
+                curNode = curNode.children[cIdx];
+                curNode.charCount -= 1;
+            }
+            // at least node : go update!
+            curNode.numInstances -= 1;
         }
         else if ( countOfWord == 1)
         {
+             for(int i = 0; i < c_arr.length; ++i)
+            {
+                char myC = c_arr[i];
+                int cIdx = myC - 'a';
+                Node parent = curNode;
+                curNode = curNode.children[cIdx];
+                if(curNode.charCount == 1)
+                    parent.children[cIdx] = null; // set parent-> child relatinoship to null now!
+                else
+                    curNode.charCount -= 1;
+            }
+            // at least node : go update!
+            curNode.numInstances -= 1;   
             
         }
         return; // no point if word does not even exist in our dictionary!
