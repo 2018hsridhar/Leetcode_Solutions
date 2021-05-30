@@ -1,9 +1,5 @@
 
 /*
-
-PROBLEM : 692. Top K Frequent Words
-URL : https://leetcode.com/problems/top-k-frequent-words/
-
 Needs a min-heap/priority queue of size k
 Needs own compareTo() method written, which supports sort based on 
 - frequency
@@ -75,6 +71,20 @@ class PQ_Node implements Comparable<PQ_Node>
 
 class Solution 
 {
+    
+    public void insert(String word)
+    {
+        
+    }
+    
+    // Reduce work from having to insret non-existent entries
+    // Enables quick frequency checking too
+    // Return node found, if word exists to - update its frequency along the way :-)
+    public TrieNode checkIsWord(String word)
+    {
+        
+    }
+    
     public List<String> topKFrequent(String[] words, int k) 
     {
         List<String> topKFrequent = new ArrayList<String>();
