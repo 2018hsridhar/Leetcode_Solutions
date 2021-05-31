@@ -15,9 +15,15 @@ URLs :
 2.
 3.
 
+The trivial answer - just use a hashmap and serch for words in "top k" frequency"
+- O(nl) space, O(nlogn) time for sort operations too!, where l = lenth of longest string
+Any answers when using a trie structure though?
+
+
+
 */
 
-public class TrieNode
+class TrieNode
 {
     Character c;
     boolean isWord; 
@@ -52,6 +58,11 @@ class PQ_Node implements Comparable<PQ_Node>
         this.freq = freq;
     }
     
+    public String getWord()
+    {
+        return this.word;
+    }
+    
     // Notice how integers [-1,0,1] assist in setting up our comparison order
     // As we compare only two elements at a time
     public int compareTo(PQ_Node e)
@@ -64,17 +75,30 @@ class PQ_Node implements Comparable<PQ_Node>
             return -1;
         return 1;
     }
-    
-    
-    
 }
 
 class Solution 
 {
+    TrieNode root;
     
     public void insert(String word)
     {
-        
+        TrieNode curr = root;
+        for(char c : word.toCharArray())
+        {
+            if(curr.children.containsKey(c))
+            {
+                curr = curr.children.get(c);
+            }
+            else
+            {
+                TrieNode newChild = new TrieNode();
+                newChild.c = c;
+                curr.children.put(c,newChild);
+                curr = newChild; 
+            }
+        }
+        curr.frequency++;
     }
     
     // Reduce work from having to insret non-existent entries
@@ -82,12 +106,57 @@ class Solution
     // Return node found, if word exists to - update its frequency along the way :-)
     public TrieNode checkIsWord(String word)
     {
+        TrieNode curr = root;
+        for(char c : word.toCharArray())
+        {
+            if(curr.children.containsKey(c))
+            {
+                curr = curr.children.get(c);
+            }
+            else
+            {
+                return null;
+            } 
+        }
+        return curr;
         
     }
+    // We can have repeated nodes in our piriority queue : e.g ("leetcode",1) and ("leetcode",2)
+    // It should get taken care of correctly anyways?
     
     public List<String> topKFrequent(String[] words, int k) 
     {
+        root = new TrieNode();
         List<String> topKFrequent = new ArrayList<String>();
+        PriorityQueue<PQ_Node> pq = new PriorityQueue<PQ_Node>();
+        for(String s : words)
+        {
+            TrieNode exists = checkIsWord(s);
+            PQ_Node newWFP;
+            if(exists != null)
+            {
+                // System.out.printf("Trie contains the word = %s\n", s);
+                exists.frequency += 1; // update please
+                newWFP = new PQ_Node(s,exists.frequency);
+                
+            }
+            else
+            {
+                insert(s); // we know at insertion, frequency will be 1!
+                newWFP = new PQ_Node(s,1);
+            }
+            pq.add(newWFP);
+            // if(pq.size() > k)
+                // pq.remove();
+                
+        }
+        
+        while(pq.size() > 0)
+        {
+            PQ_Node myCur = pq.remove();
+            topKFrequent.add(myCur.getWord());
+            System.out.printf("Adding (%s, %d)\n", myCur.getWord(), myCur.freq);
+        }
         
         return topKFrequent;
     }
