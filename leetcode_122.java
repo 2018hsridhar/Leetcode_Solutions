@@ -1,8 +1,5 @@
 /*
 
-URL = https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/
-122. Best Time to Buy and Sell Stock II
-
 THOUGHT PROCESSES : 
 
 Trick : Approach is a Greedy Algorithm
@@ -26,6 +23,8 @@ We know prices are bounded by the closed interval [ 0, 10^4 ]
 EDGE cases : 
 [7,1,5,3,6,4]
 [7,1,5,3,1,6,4]
+[7,1,5,3,6,2,10] - 8 + 3 + 4 = 15 ( not just 10-1 = 9 )
+[7,8,4,5,2,3] - also all local maximas = 1 + 1 + 1 = 3
 [7,1,5,3,2,1,0] - continuous decreasing subsequence 
 [7,1,5,3,4,5,6] - continuous increasing subsequence : a min and max can be established here?
 
