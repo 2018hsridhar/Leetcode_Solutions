@@ -5,7 +5,7 @@ THOUGHT PROCESES :
 1. Is a typical DFS algorithm in a tree structure
 * note : most tree algorithm DFS methods tend to be pre-order ( root, then left and right, as in this case ).
 * in cases such as obtain a maximum/minimum of a tree, we execute post-order DFS ( check left subtree, then right subtree, then subtree including root itself !) 
-
+* There are three common ways to traverse them in depth-first order: in-order, pre-order and post-order.
 
 
 1469. Find All The Lonely Nodes
