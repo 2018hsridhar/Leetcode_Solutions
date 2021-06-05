@@ -1,8 +1,5 @@
 
 /*
-133. Clone Graph
-https://leetcode.com/problems/clone-graph/
-
 
 THOUGHT PROCESSES : 
 
@@ -80,6 +77,7 @@ class Solution {
     
     
     // Have a tough time understanding why an approach will converge, or how convergence will ensue too!
+    // Convergence in graphs vs. trees : both are if a node has no more children/neighbors, but in graphs, we also check if we visited a node already ( as cycles may be prevalent ) 
     
     public void dfs(Node node, HashSet<Integer> visited, HashMap<Integer,Node> nodes)
     {
