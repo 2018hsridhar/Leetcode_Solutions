@@ -1,7 +1,6 @@
 /*
-
-URL = https://leetcode.com/problems/maximum-units-on-a-truck/
 1710. Maximum Units on a Truck
+https://leetcode.com/problems/maximum-units-on-a-truck/
 
 */
 
@@ -22,9 +21,26 @@ class Solution {
                 return 0;
             }
         });
+
+        // for(int[] e : boxTypes)
+            // System.out.printf("[%d,%d],", e[0],e[1]);
         
-        for(int[] e : boxTypes)
-            System.out.printf("[%d,%d]\n", e[0],e[1]);
+        for(int i = 0; i < boxTypes.length; ++i)
+        {
+            int[] box = boxTypes[i];
+            if(truckSize >= box[0])
+            {
+                maxNumUnits += box[0] * box[1];
+                truckSize -= box[0];
+            }
+            else
+            {        
+                int diff = truckSize; // just remainder now
+                maxNumUnits += diff * box[1];            
+                break;
+            }
+        }
+        
         
         return maxNumUnits;
     }
