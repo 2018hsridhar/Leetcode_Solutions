@@ -47,6 +47,8 @@ Notice the "sell before you buy" requirement!
 In each case, we purchase at <1> UNTIL we hit a local maxima!
 Because we want to find the date we can do up to the best
 
+Am I asking to look at price history preceding me here?
+A local minima and a local maximum need to be established in comparison to a baseline too!
 
 
 
@@ -54,7 +56,13 @@ Because we want to find the date we can do up to the best
 
 
 class Solution {
-    public int maxProfit(int[] prices) {
+    public int maxProfit(int[] prices) 
+    {
+        int maxProfit = 0;
+        if(prices.length <= 1)
+            return 0;
         
+        
+        return maxProfit;
     }
 }
