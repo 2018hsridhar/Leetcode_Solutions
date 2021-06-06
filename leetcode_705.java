@@ -3,6 +3,11 @@
 705. Design HashSet
 https://leetcode.com/problems/design-hashset/
 
+
+Approaches in order of difficulty
+- Linked List with "Seperate Chaining" Bucket Strategy!
+- Linked List with "Open Addressing" Strategy
+
 THOUGHT PROCESSES : 
 
 When building a data structure, note performance times and edge cases
