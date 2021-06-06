@@ -105,7 +105,7 @@ class MyLinkedList {
     /** Add a node of value val before the index-th node in the linked list. If index equals to the length of linked list, the node will be appended to the end of linked list. If index is greater than the length, the node will not be inserted. */
     public void addAtIndex(int index, int val) 
     {
-        if(index > size)
+        if(index >= size)
             return; // Node can not be added anyways 
         else if ( index == size ) 
             addAtTail(val);
