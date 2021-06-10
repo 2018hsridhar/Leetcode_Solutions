@@ -22,7 +22,7 @@ public:
     bool squareIsWhite(string coordinates) 
     {
         std::regex regex_aceg = std::regex("[aceg]");
-        std::regex regex_bdfg = std::regex("[bdfg]");
+        std::regex regex_bdfg = std::regex("[bdfh]");
         string letter = coordinates.substr(0,1);
         int number = std::stoi(coordinates.substr(1,2));
         if(std::regex_match(letter, regex_aceg))
