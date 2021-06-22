@@ -22,6 +22,7 @@ What type of order relation defines our intersection ( <=, or < )? Is a gotcha
 Time complexity : Desirably [T,S] = [O(N), O(1)] where N := number of elements total in both SLLs
 
 Getting tripped up : dealing with a full merge or a partial merge of intervals?
+Can we get tripped up testing or coding for each type of merge?
 
 */
 
@@ -54,11 +55,13 @@ class Solution
         return results;
     }
     
-    // Use {0,1,2} flag -> 1 tells us it is A overlapping B : 2 tells us it is B overlapping A
-    public int twoIntersecting(int[] A, int[] B)
+    public boolean intervalsIntersect(int[] A, int[] B)
     {
-        
-        
+        if(A[1] < B[0])
+            return false;
+        else if ( B[1] < A[0] )
+            return false;
+        return true;
     }
     
     public int[] merge(int[] A, int[] B)
