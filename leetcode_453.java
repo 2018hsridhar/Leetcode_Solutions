@@ -44,9 +44,43 @@ NM([1,2,2,2,2,4]) = 6
 
 Notice the increment with each '2' or '3' added here
 */
+/*
 
-class Solution {
-    public int minMoves(int[] nums) {
-        
+453. Minimum Moves to Equal Array Elements
+https://leetcode.com/problems/minimum-moves-to-equal-array-elements/
+
+THOUGHT PROCESS : 
+
+In such as optimizing number of operations, try a greedy approach : what is the dumbest idea?
+
+Notwithstanding initial merge sort time-space complexity [ O(NlogN), O(N)] pre-processing
+Ideal [T,S] = [O(N), O(1)] : traverse all elemenets of the array
+
+Test cases : 
+[1,4,2,7,3,9,4,100,62,35]
+[1,3]
+[1,1,3]
+[1,1,1,1,3]
+
+[1,3,3]
+[1,3,3,3]
+[1,3,5,7]
+
+[1,100]
+[1,99,100]
+
+*/
+
+
+class Solution 
+{
+    public int minMoves(int[] nums) 
+    {
+        int numMoves = 0;
+        Arrays.sort(nums);
+        int initVal = nums[0];
+        for(int i = 1; i < nums.length; ++i)
+            numMoves += nums[i] - initVal;
+        return numMoves;
     }
 }
