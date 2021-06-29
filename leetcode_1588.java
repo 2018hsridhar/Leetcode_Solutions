@@ -1,5 +1,8 @@
 
 /*
+
+VIDEO = https://www.youtube.com/watch?v=pVS3yhlzrlQ
+
 1588. Sum of All Odd Length Subarrays
 URL = https://leetcode.com/problems/sum-of-all-odd-length-subarrays/
 Utilize the 1-D prefix sum approach
