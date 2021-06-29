@@ -1,0 +1,77 @@
+/*
+
+This is just the level order traversal question
+Thankfully, each value in the provided BST proves unique
+Additionally, this BST does not get that huge!
+
+URL = https://leetcode.com/problems/cousins-in-binary-tree/
+993. Cousins in Binary Tree
+
+*/
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+
+/*
+It is not just same level ( depth ) -> parents must differ too! 
+Check when you add to the candidates ( the next upcoming level ) 
+Root node value will never be included anyways!
+
+Time complexity : O(N)
+Space Complexity: O(N) where N := number of nodes 
+--- ( suppose N-1:1 parition in tree, or a complete tree case such as 1->2->4->8, where 8 = half of nodes existing )
+
+*/
+
+class Solution {
+    public boolean isCousins(TreeNode root, int x, int y) 
+    {
+        if(root == null) return false;
+        List<TreeNode> candidates = new ArrayList<TreeNode>();
+        candidates.add(root);
+        return traverseInLevelOrder(candidates, x, y);
+    }
+    
+    public boolean traverseInLevelOrder(List<TreeNode> candidates, int x, int y)
+    {
+        // System.out.printf("Candidates size = %d\n", candidates.size());
+        if(candidates.size() == 0)
+            return false;
+        
+        // Construct new candidates list
+        int xId = -1;
+        int yId = -1;
+        List<TreeNode> nextLevel = new LinkedList<TreeNode>();
+        for(int i = 0; i < candidates.size(); ++i)
+        {
+            TreeNode myNode = candidates.get(i);
+            if(myNode.left != null)
+            {
+                nextLevel.add(myNode.left);
+                if(myNode.left.val == x) xId = i;
+                if(myNode.left.val == y) yId = i;
+            }
+            if(myNode.right != null)
+            {
+                nextLevel.add(myNode.right);
+                if(myNode.right.val == x) xId = i;
+                if(myNode.right.val == y) yId = i;
+            }
+        }
+        
+        return (xId != yId && xId != -1 && yId != -1 ) || traverseInLevelOrder(nextLevel, x, y);
+    }
+}
