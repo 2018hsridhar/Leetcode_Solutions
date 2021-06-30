@@ -30,6 +30,9 @@ Things I will ask you in a sort algorithm :
 10. Want to see if interviee understands either "bucketsort" or "countsort"
 
 
+Use the explanation of count sort from wikipedia, which works off of keys of the input array -> not directly elements of the input array
+
+
 EDGE CASES : 
 Singleton array case -> return 0
 
