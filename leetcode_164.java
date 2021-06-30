@@ -1,4 +1,14 @@
+// Accompanying hyperlinks 
 
+// Radix Sorting : 
+// https://www.youtube.com/watch?v=nu4gDuFabIM
+// https://www.youtube.com/watch?v=XiuSW_mEn7g&t=81s
+// https://www.youtube.com/watch?v=OKd534EWcdk
+// https://www.youtube.com/watch?v=XcF1l2pq9ZI
+
+
+// Counting Sort : 
+// https://www.youtube.com/watch?v=OKd534EWcdk
 
 /*
 
@@ -16,7 +26,8 @@ Things I will ask you in a sort algorithm :
 6. Can we establish a type of convergence?
 7. Is it a comparitive ( e.g. merge/quick ) or a non-comparative sort algorithm?
 8. Talk about sorting algorithms in terms of keys ( not elements ) : sometimes, we compute some info from each element.
-
+9. Is a lexicographic sort : works across the dimensions of tuples of data ( x1,x2,...,xn ). Sort from the broadest dimension unto the narrowest dimension. Max number of digits can be considered a "dimension" for our data! Most familiar lexicographic orderings are 2D cartesian planes or dictionary orderings.
+10. Want to see if interviee understands either "bucketsort" or "countsort"
 
 
 EDGE CASES : 
