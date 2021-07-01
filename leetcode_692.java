@@ -163,15 +163,6 @@ class Solution
 }
 
 
-
-
-
-
-
-
-
-
-
 /*
 
 692. Top K Frequent Words
@@ -194,8 +185,15 @@ Reccurring patterns
 Types of binds to think about for strings - two come up in mind only : 
 1. Bin by the first letter of each string [ maximal_key = 26 ]
 2. Bin by the length of each string [ maximal_key = max_len(strings)]
+3. Frequency of occurance [ 0,k]. We know max possible frequency = length of input array!
+4. The strings themselves ( but soo many strings be possible in a dictionary! ) 
 
+Difficulty of binning by frequency of occurence, is that we have to migrate over elements ( say, "i","i" ) -> migrate from bin_1, to bin_2. Seems like too much effort!
 
+When given this ( two keys same frequency, given key in lower order ) => think of stable sorting!
+OFC if you apply the hasmap ahead of time : construct bins can be quick ( but si the lexicographic ordering  preserved here )?
+
+You have to return the sort in the end anyways - hence, why binning can help ( sort by frequency, from highest => lowest ) 
 
 */
 
@@ -204,6 +202,6 @@ class Solution
 {
     public List<String> topKFrequent(String[] words, int k) 
     {
-        
+        return null;
     }
 }
