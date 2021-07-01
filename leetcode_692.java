@@ -161,3 +161,49 @@ class Solution
         return topKFrequent;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+/*
+
+692. Top K Frequent Words
+URL = https://leetcode.com/problems/top-k-frequent-words/
+Resources = https://en.wikipedia.org/wiki/Bucket_sort#Worst-case_analysis
+
+EDGE CASES / TESTING : 
+1. Akin to typical cases of using buckets, break with a clustered input case
+2. Uniform distribution
+3. Same values
+3. 
+
+
+Assume inputs are reasonable and strictly lowercase letters
+Assume k is a valid natural number
+
+Reccurring patterns
+- Compute the maximum_key ahead of time in a one-pass linear scan
+
+Types of binds to think about for strings - two come up in mind only : 
+1. Bin by the first letter of each string [ maximal_key = 26 ]
+2. Bin by the length of each string [ maximal_key = max_len(strings)]
+
+
+
+*/
+
+
+class Solution 
+{
+    public List<String> topKFrequent(String[] words, int k) 
+    {
+        
+    }
+}
