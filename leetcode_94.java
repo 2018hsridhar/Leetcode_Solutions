@@ -1,26 +1,3 @@
-
-/*
-
-94. Binary Tree Inorder Traversal
-https://leetcode.com/problems/binary-tree-inorder-traversal/
-
-Ideas
-
-1. In pre-order traversal, we stop exploring the parent, once the children have been added onto our stack
-2. Add to our stack in order of expected traversal : right->root->left
-3. Convergence occurs if no more child nodes available for exploration
-4. We need to still track parent nodes, for backtracking -> however, we also need a notion of a "visited set" for root nodes, to know that we should not add back the children too
-5. Base cases : singleton node, node with 2 children, node with 1 child ( on left AND on right ) 
-6. In pre-order, we add children ( right->left ) since we explore later children as we traverse to the RHS
--> will help for n-ary pre-order iterative traversal!
-7. If the values of a BT are unique - can just check the integers; else, check the node objects themselves, as their addresses are guaranteed uniqueness! 
-8. Does stack store nodes, or store integers? If we need to push-and-pop our children and root nodes, it must default to a stack data structure.
-9. Do we build traversal after exploring all nodes ( a full stack ), or does stack evolve dynamically as nodes are pushed in and popped out?
-
-*/
-
-
-
 /**
  * Definition for a binary tree node.
  * public class TreeNode {
@@ -36,8 +13,67 @@ Ideas
  *     }
  * }
  */
+
+/*
+
+94. Binary Tree Inorder Traversal
+https://leetcode.com/problems/binary-tree-inorder-traversal/
+
+Always ask if a given binary tree is a binary search tree ( to optimize performance time )
+- In this case, it isn't ( otherwise, node_3, in the example figure on the left, would be a right child of node 2 ) 
+- Terminate recursion when TreeNode root = null here
+- Iterative approaches need a data structure , to check if size=0, to entail a proper termination
+- The singleton node and a leaf node are exactly the same type of processing anyways
+- Are the values of the Bianry Tree unique or not?
+- Can have a [0] node case too! ( but up to a 100 nodes - max depth level of stack ) 
+- Space is better intuitied as the maximum depth a stack/support data structrue can go up to within an iterative method
+
+
+
+Ideal performance time ( iteraive, using space ) 
+Time = O(N) : visited nodes are not added again -> only new needs in each iteration!
+Space = O(N)
+N := total number of nodes contained in our tree
+
+*/
+
 class Solution {
-    public List<Integer> inorderTraversal(TreeNode root) {
+    public List<Integer> inorderTraversal(TreeNode root) 
+    {
+        LinkedList<Integer> traversal = new LinkedList<Integer>();
+        if(root == null)
+            return traversal;
+        Stack<TreeNode> stk = new Stack<TreeNode>();
+        stk.add(root);
+        while(!stk.isEmpty())
+        {
+            TreeNode candidate = stk.pop();
+            if(candidate.left == null && candidate.right == null)
+            {
+                traversal.addLast(candidate.val);
+            }
+            else if ( candidate.left == null && candidate.right != null)
+            {
+                stk.add(candidate.right);
+                candidate.right = null;
+                stk.add(candidate);
+            }
+            else if ( candidate.left != null && candidate.right == null)
+            {
+                stk.add(candidate);
+                stk.add(candidate.left);
+                candidate.left = null;
+            }
+            else
+            {
+                stk.add(candidate.right);
+                stk.add(candidate);
+                stk.add(candidate.left);
+                candidate.left = null;
+                candidate.right = null;
+            }
+        }
         
+        return traversal;
     }
 }
