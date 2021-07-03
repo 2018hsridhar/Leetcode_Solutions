@@ -3,7 +3,6 @@
 URL = https://leetcode.com/problems/matrix-cells-in-distance-order/
 1030. Matrix Cells in Distance Order
 
-This was your Uber Interview, in some senses -> but they provided multiple initial matrix coordinates
 Set up an initial grid of values to denote distance ( if value != Integer.MIN_VALUE :: denotes that cell has been visited! ) 
 
 Return coordinates of cells, sorted by distance too 
@@ -37,16 +36,15 @@ class Solution
         for(int i = 0; i < rows; ++i)
             for(int j = 0; j < cols; ++j)
                 matrix[i][j] = Integer.MIN_VALUE;
-        matrix[rCenter][cCenter] = 0;
         LinkedList<int[]> candidates = new LinkedList<int[]>();
         int[] initPoint = {rCenter, cCenter};
         candidates.addLast(initPoint);
         
         // [2] Execute recursive helper
         int[][] sortedCoords = new int[rows*cols][2];
-        int wIdx = 0 //where to commence writes into array each time
+        int wIdx = 0; //where to commence writes into array each time
         int level = 0;
-        helper(matrix, candidates, sortedCoords int wIdx, level);
+        helper(matrix, candidates, sortedCoords, wIdx, level);
         
         return sortedCoords;
         
@@ -55,31 +53,49 @@ class Solution
     public void helper(int[][] matrix, List<int[]> candidates, int[][] sortedCoords, int wIdx, int level )
     {
         List<int[]> nextLevel = new LinkedList<int[]>();
+        if(candidates.size() == 0)
+            return;
         // [1] Go over existing candidates
         for(int i = 0; i < candidates.size(); ++i)
         {
             // [1.1] Add existing candidate to sortedCoords array
-            int[] myCandidate = candidates.get(i);\
-            int myC_x = myCandidate[0];
-            int myC_y = myCandidate[1];
-            sortedCoords[wIdx][0] = myC_x;
-            sortedCoords[wIdx][1] = myC_y;
+             int[] myCandidate = candidates.get(i);
+            int x = myCandidate[0];
+            int y = myCandidate[1];
+            // if already visited -> skip its processing
+            if(matrix[x][y] != Integer.MIN_VALUE)
+                continue;
+            
+            sortedCoords[wIdx][0] = x;
+            sortedCoords[wIdx][1] = y;
             ++wIdx;
             
             // [2] Set matrix space to candidate value
-            matrix[myC_x][myC_y] = level;
+            matrix[x][y] = level;
             
             // [3] Add candidates to new list
             // Check coordinate space and perform bounds checks too
-            
-            
-            nextLevel.add(nextChild);
-            
+            if((x - 1) >= 0 && matrix[x-1][y] == Integer.MIN_VALUE )
+            {
+                int[] newCandidate = {x-1,y};
+                nextLevel.add(newCandidate);
+            }
+            if((x + 1) <= (matrix.length - 1) && matrix[x+1][y] == Integer.MIN_VALUE )
+            {
+                int[] newCandidate = {x+1,y};
+                nextLevel.add(newCandidate);
+            } 
+            if((y - 1) >= 0 && matrix[x][y-1] == Integer.MIN_VALUE )
+            {
+                int[] newCandidate = {x,y-1};
+                nextLevel.add(newCandidate);
+            }
+            if((y + 1) <= (matrix[0].length - 1) && matrix[x][y+1] == Integer.MIN_VALUE )
+            {
+                int[] newCandidate = {x,y+1};
+                nextLevel.add(newCandidate);
+            } 
         }
-        helper(matrix, nextLevel, sortedCoords, wIdx, ++level);;
-        
-        
-        
+        helper(matrix, nextLevel, sortedCoords, wIdx, ++level);
     }
-    
 }
