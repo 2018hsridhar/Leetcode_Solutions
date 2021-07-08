@@ -14,6 +14,8 @@ Major gotchas
 
 Trick : use (n-h:h) partitioning and sorted property to induct on a sorted sequence ( in ascending/descending order ) and guarantee proper convergence to some solution here
 
+The cool part of binary search : is just like a linear search, but not auxillary space needed
+
 */
 
 class Solution 
