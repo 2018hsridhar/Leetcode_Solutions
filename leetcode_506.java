@@ -1,5 +1,4 @@
 /*
-506. Relative Ranks
 
 THOUGHT PROCESS : 
 1. Utilize copy constructor for deep-copying of initial array ( score ) 
@@ -11,8 +10,8 @@ Scores are reasonably bounded from [0,1,000,000] : no data overflow with "signed
 n is reasonably bounded from [1,10,000] - no worry about O(Nlogn) performance
 
 Computational complexity : 
-Time = O(NlogN) + O(N) = O(NlogN)
-Space = O(N) + O(N) = O(N) [ copied array + hashmap ] 
+Time = O(NlogN) + O(N) + O(N) = O(NlogN) [ Initial library sort function + 2 for loops about the scores array ]
+Space = O(N) + O(N) = O(N) [ copied array + hashmap construction] 
 
 Edge cases : 
 (1) Singletons - {1},{10}
@@ -22,36 +21,13 @@ Edge cases :
 
 No repeated values cases to test here - will not break
 
-
 */
-
-
-
-
 
 class Solution 
 {
     public String[] findRelativeRanks(int[] score) 
     {
-        // base cases : n = 1, n = 2 ( n >= 1 guaranteed ) 
         String[] result = new String[score.length];
-        if(score.length == 1)
-            result[0] = "Gold Medal";
-        else if ( score.length == 2)
-        {
-            if(score[0] > score[1])
-            {
-                result[0] = "Gold Medal";
-                result[1] = "Silver Medal";
-            }
-            else
-            {
-                result[0] = "Silver Medal";
-                result[1] = "Gold Medal";
-            }
-        }
-        
-        // Non-base case
         int[] scoreCopy = Arrays.copyOf(score, score.length);
         Arrays.sort(scoreCopy);
         HashMap<Integer,Integer> scoreIndex = new HashMap<Integer,Integer>();
@@ -82,7 +58,7 @@ class Solution
             }
                 
         }
-        
+
         
         return result;
     }
