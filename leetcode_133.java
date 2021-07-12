@@ -1,40 +1,4 @@
-
 /*
-
-THOUGHT PROCESSES : 
-
-Deep-copying vs. Shallow-Copying
-Occurs only for objects
-In deep-copying, references are dereferenced, and the dereference values will be copied over newly
-In shallow-copying, rerfrences are copied, but not dereferenced. Memory remains shared
-
-The gist is whether the copies possess any shared memory or not
-It's kinda cool how we can store memory references, and still basically work off of primitives - imagine never scaling more than 8-bit wide data types for an object ( just size of primitive types only! ) - might be efficient too for computer registers!
-
-Shallow-copying : sharing of reference objects
-
-Node value = Node index ( for test purposes ) 
-Akin to tree copying too?
-
-Node cardinality remains bounded by the closed interval [1,100]
-Node values are unique per node
-No repeated edges/self-loops :-). 
-Is an undirectded graph
-Graph is connected - is a single component ( hence the term "Connected Components"! )
-
-Since graph is undirected too, then each edge - (a,b) and (b,a) - must be copied over accordingly!
-At each vertex, copy the neighbors, and then add to a visited set - prevent re-exploration again!
-
-Worst case with graph : 1 node adjacent to them all ( or K^n - the complete graph )
-Benefit of adjacency list : ordering of vertices does not matter - it just matters that they get processed!
-
-Have to create each node newly - need an efficient look-up to accompany them - thus, hashmap
-
-*/
-
-
-
-
 // Definition for a Node.
 class Node {
     public int val;
@@ -52,48 +16,101 @@ class Node {
         neighbors = _neighbors;
     }
 }
+*/
+
+/*
+133. Clone Graph
+URL = https://leetcode.com/problems/clone-graph/
+
+Node value = node index ( luckily :-) )
+Using adjacency list representation graph - UNORDERED listing 
+Always start at first node ( value = one ) 
+Return copy of given node as a reference
+Ask if node values are unique
+Ask if graph is CONNECTED ( are all nodes visitable, from any or the starting given node ) 
+Cardinality of nodes is reasonable too [ 0,100 ] 
 
 
-// I need a way to store those initial nodes too
-// And I do not want to recreate any already encountered nodes
 
-class Solution {
+Deep-copying generally requires the use of hashmaps
+
+
+Computational Complexity : 
+Time = O(B^D) where B = branch factor, D = max depth. So in this case, O(|V|+|E|)
+- put all edges into consideration, even if not traversed here
+
+Space = O(V) Hashmap
+
+Edge case testing :
+(1) The empty graph
+(2) A singleton node case
+(3) A complex K_n graph
+(4) |V| nodes with no connections = |V| disjoint sets ( BUT  NOT CONNECTED - WOAH! ) 
+- [[],[],[],[]] = a representation for 4 such nodes
+
+
+
+Since this is a connected, undirected graph => unlike list cloning, you can return ANY node : not limited to the head of the SLL
+For every single index in the adjList - a new node has to be created
+We do not know the size of this graph initially ( see that is the gotcha ). Versus a data structure wheere size is known
+-> IF the size were known : populating the pointers and the objects would be super easy!
+-> Due to the connected property of the graph, it is guaranteed that a BFS/DFS will terminate upon the final explored node too!
+
+
+It is possible that nodes in your neighbors have been visited -> but make sure to add edges too
+Need to modify array lists as candidates change : must modify to the hashed version! 
+GOod news with BFS - update adjacency list of parent : then proceed with the children!
+*/
+
+
+class Solution 
+{
     public Node cloneGraph(Node node) 
     {
         if(node == null)
             return null;
         
-        // Make initial node for the graph
-        HashSet<Integer> visited = new HashSet<Integer>();
-        HashMap<Integer,Node> nodes = new HashMap<Integer,Node>();
-        Node clone = new Node(node.val);
-        
-        dfs(node, visited, nodes);
-        return clone;
-    }
-    
-    // "Hash"Set and "Hash"Map, underneath, utilize hashing algorithms to ensure uniqueness of their keysets
-    // Both a <set> and a <map> have "keySets" - but a map has an accompanying "valueSet" too. It is how we iterate over keys, which matters
-    
-    
-    // Have a tough time understanding why an approach will converge, or how convergence will ensue too!
-    // Convergence in graphs vs. trees : both are if a node has no more children/neighbors, but in graphs, we also check if we visited a node already ( as cycles may be prevalent ) 
-    
-    public void dfs(Node node, HashSet<Integer> visited, HashMap<Integer,Node> nodes)
-    {
-        if(!visited.contains(node.val))
+        Node initNode = node;
+        HashMap<Integer,Node> newGraph = new HashMap<Integer,Node>();
+        Set<Node> visited = new HashSet<Node>();
+        Queue<Node> stateSpace = new LinkedList<Node>();
+        stateSpace.add(node);
+        while(!stateSpace.isEmpty())
         {
+            Node candidate = stateSpace.poll();
+            if(!visited.contains(candidate))
+                visited.add(candidate); 
             
-            for(Node e : node.neighbors)
+            
+            Node parentNode;
+            if(!newGraph.containsKey(candidate.val))
             {
-                
-                
-                dfs(e,visited,nodes);
+                parentNode = new Node(candidate.val);
+                newGraph.put(candidate.val, parentNode);
             }
-            visited.add(node.val);
+            else
+                parentNode = newGraph.get(candidate.val);
+            
+            // Iterate over existing adjacency list AND construct the new adjacency list too
+            List<Node> children = candidate.neighbors;
+            List<Node> newChildren = new LinkedList<Node>();
+            for(Node x : children)
+            {
+                if(!newGraph.containsKey(x.val))
+                {
+                    Node newEl = new Node(x.val);
+                    newGraph.put(x.val, newEl);
+                    newChildren.add(newEl);
+                }
+                else
+                    newChildren.add(newGraph.get(x.val));
+                if(!visited.contains(x))
+                    stateSpace.add(x);
+            }
+            parentNode.neighbors = newChildren;
+            
         }
-        else
-            continue; // current branch of DFS terminates if visited set already contains element!
+        
+        return newGraph.get(initNode.val);
     }
-    
 }
