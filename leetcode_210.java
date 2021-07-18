@@ -15,7 +15,7 @@ DATA TYPES :
 
 COMPUTATIONAL COMPLEXITY : 
 TIME = O(|V| + |E|)
-SPACE/Memory = O(|V|)
+SPACE/Memory = O(|V| + |E|) + O(|V|) = O(|V| + |E|)
 - Spaces matters for in-memory testing !
 
 EDGE CASE TESTING : 
@@ -34,8 +34,8 @@ Especially for generating permutations here
 Easiest is to generate K_N graphs, and then delete random edges from those sets, to generate a test suite case barrage for this problem :-)
 (7) All nodes disjoint : n = 6, edges = [[]] => output = any permutation from {0-5} here :-)
 (8) n = 8 with 3 disjoint graphs : [[2,1],[2,0],[1,0],[4,3],[7,6],[7,5],[6,5]] => output = {0,3,5,2,1,4,6,7} :-)
-(9) 3 with [[1,0],[1,2],[0,1]]
-
+*****(9) n=3 with [[1,0],[1,2],[0,1]]
+*** You missed out the failure case of a partial topological sort ordering, BUT not able to generate the full toplogical sort ordering
 
 Kahn's In-Degree Ordering Algorithm be the easiest here
 Requires additional preprocessing/information ahead of schedule ( DFS approach works in real-time ) 
