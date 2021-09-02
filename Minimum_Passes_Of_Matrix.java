@@ -1,5 +1,4 @@
 // https://www.algoexpert.io/questions/Minimum%20Passes%20Of%20Matrix
-
 import java.util.*;
 
 class Program {
@@ -30,68 +29,97 @@ class Program {
 	
 	
 	*/
+	
+	public class triplet
+	{
+		public int i;
+		public int j;
+		public int l;
+		
+		public triplet(){};
+		public triplet(int i, int j, int l)
+		{
+			this.i = i;
+			this.j = j;
+			this.l = l;
+		}
+	}
+	
   public int minimumPassesOfMatrix(int[][] matrix) {
-    // Write your code here.
-    return -1;
+    // QUICKLY HANDLE THE BASE CASE HERE
+		Queue<triplet> queue = new LinkedList<triplet>();
+		if(matrix.length == 1 && matrix[0].length == 1)
+			if(matrix[0][0] < 0) return -1;
+			else return 0;
+		
+		for(int i = 0; i < matrix.length; ++i)
+		{
+			for(int j = 0; j < matrix[0].length; ++j)
+			{
+				if(matrix[i][j] < 0)
+				{
+					triplet newEl = new triplet(i,j,1);
+					queue.add(newEl);
+				}
+			}
+		}
+		
+		int numPasses = 0;
+		int numUnexplorableRoots = 0;
+		while(!queue.isEmpty())
+		{
+			System.out.printf("numUnExRoots = %d AND queue size = %d\n", numUnexplorableRoots, queue.size());
+			if(numUnexplorableRoots == queue.size())
+				return -1; 
+			
+			triplet root = queue.remove();
+			boolean posN = hasPositiveNeighbor(root, matrix);
+			System.out.printf("For (%d,%d), val = %d, posN = %s\n", root.i, root.j, matrix[root.i][root.j], posN);
+			if(posN == true)
+			{
+				matrix[root.i][root.j] *= -1; // this will mess you down later : huge bug!
+				// It percolates : { -4 => -5 => -6 }
+				numUnexplorableRoots = 0;
+			}
+			else
+			{
+				root.l += 1;
+				System.out.printf("Root.l = %d for val = %d\n", root.l, matrix[root.i][root.j]);
+				numPasses = Math.max(numPasses, root.l);
+				++numUnexplorableRoots;
+				queue.add(root);
+			}
+		}
+		
+    return numPasses + 1;
   }
-}
-
-
-
-
-class ProgramTest {
-  @Test
-  public void TestCase1() {
-    int[][] matrix = new int[][] {{-1, -2, -3, -4, -5, 1}};
-    int expected = 5;
-    int actual = new Program().minimumPassesOfMatrix(matrix);
-    assert (expected == actual);
-
-  public void TestCase2() {
-    int[][] matrix = new int[][] {{0}};
-    int expected = 0;
-    int actual = new Program().minimumPassesOfMatrix(matrix);
-    assert (expected == actual);
-  }
-  
-  public void TestCase3() {
-    int[][] matrix = new int[][] {{-1}};
-    int expected = -1;
-    int actual = new Program().minimumPassesOfMatrix(matrix);
-    assert (expected == actual);
-
-  public void TestCase4() {
-    int[][] matrix = new int[][] {{0, -1, -3, 2, 0}, {1, -2, -5, -1, -3}, {3, 0, 0, -4, -1}};
-    int expected = 3;
-    int actual = new Program().minimumPassesOfMatrix(matrix);
-    assert (expected == actual);
-  }
-	  
-  public void TestCase5() {
-    int[][] matrix = new int[][] {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
-    int expected = 0;
-    int actual = new Program().minimumPassesOfMatrix(matrix);
-    assert (expected == actual);
-  }
-	  
-  public void TestCase6() {
-    int[][] matrix = new int[][] {{-1, -2, -3}, {-4, -5, -6}, {-7, -8, -9}};
-    int expected = -1;
-    int actual = new Program().minimumPassesOfMatrix(matrix);
-    assert (expected == actual);
-  }
-	  
-   public void TestCase7() {
-    int[][] matrix = new int[][] {{-5, 0, 0 }, {0, -1, 0 }, {7, 0, 6}};
-    int expected = -1;
-    int actual = new Program().minimumPassesOfMatrix(matrix);
-    assert (expected == actual);
-  }
-
-  public void TestCase8() {
-    int[][] matrix = new int[][] {{-1, -2, -3, 1}, {-4, -5, -6, 0}, {-7, -8, -9, 0}, {1, 0, 0, 0}};
-    int expected = -1;
-    int actual = new Program().minimumPassesOfMatrix(matrix);
-    assert (expected == actual);
-  }
+	
+	public boolean hasPositiveNeighbor(triplet root, int[][] matrix)
+	{
+		int i = root.i;
+		int j = root.j;
+		if((i-1) >= 0 && matrix[i-1][j] > 0)
+		{
+			System.out.printf("here1\n");
+			return true;
+		}
+		if((i+1) < matrix.length && matrix[i+1][j] > 0)
+		{
+			System.out.printf("here2\n");
+			return true;
+		}
+		if((j-1) >= 0 && matrix[i][j-1] > 0)
+		{
+			System.out.printf("here3\n");
+			return true;
+		}
+		if((j+1) < matrix[0].length && matrix[i][j+1] > 0)
+		{
+			System.out.printf("here4\n");
+			return true;
+		}
+		
+		return false;
+	}
+	
 }
