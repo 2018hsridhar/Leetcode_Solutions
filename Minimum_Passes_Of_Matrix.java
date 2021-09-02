@@ -35,3 +35,56 @@ class Program {
     return -1;
   }
 }
+
+
+
+
+class ProgramTest {
+  @Test
+  public void TestCase1() {
+    int[][] matrix = new int[][] {{-1, -2, -3, -4, -5, 1}};
+    int expected = 5;
+    int actual = new Program().minimumPassesOfMatrix(matrix);
+    assert (expected == actual);
+
+  public void TestCase2() {
+    int[][] matrix = new int[][] {{0}};
+    int expected = 0;
+    int actual = new Program().minimumPassesOfMatrix(matrix);
+    assert (expected == actual);
+  }
+  
+  public void TestCase3() {
+    int[][] matrix = new int[][] {{-1}};
+    int expected = -1;
+    int actual = new Program().minimumPassesOfMatrix(matrix);
+    assert (expected == actual);
+
+  public void TestCase4() {
+    int[][] matrix = new int[][] {{0, -1, -3, 2, 0}, {1, -2, -5, -1, -3}, {3, 0, 0, -4, -1}};
+    int expected = 3;
+    int actual = new Program().minimumPassesOfMatrix(matrix);
+    assert (expected == actual);
+  }
+	  
+  public void TestCase5() {
+    int[][] matrix = new int[][] {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+    int expected = 0;
+    int actual = new Program().minimumPassesOfMatrix(matrix);
+    assert (expected == actual);
+  }
+	  
+  public void TestCase6() {
+    int[][] matrix = new int[][] {{-1, -2, -3}, {-4, -5, -6}, {-7, -8, -9}};
+    int expected = -1;
+    int actual = new Program().minimumPassesOfMatrix(matrix);
+    assert (expected == actual);
+  }
+	  
+   public void TestCase7() {
+    int[][] matrix = new int[][] {{-5, 0, 0 }, {0, -1, 0 }, {7, 0, 6}};
+    int expected = -1;
+    int actual = new Program().minimumPassesOfMatrix(matrix);
+    assert (expected == actual);
+  }
+}
