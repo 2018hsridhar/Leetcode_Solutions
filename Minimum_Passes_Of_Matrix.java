@@ -87,4 +87,11 @@ class ProgramTest {
     int actual = new Program().minimumPassesOfMatrix(matrix);
     assert (expected == actual);
   }
+
+  public void TestCase8() {
+    int[][] matrix = new int[][] {{-1, -2, -3, 1}, {-4, -5, -6, 0}, {-7, -8, -9, 0}, {1, 0, 0, 0}};
+    int expected = -1;
+    int actual = new Program().minimumPassesOfMatrix(matrix);
+    assert (expected == actual);
+  }
 }
