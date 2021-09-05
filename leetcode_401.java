@@ -19,6 +19,8 @@ class Solution
     public List<String> readBinaryWatch(int turnedOn) 
     {
         List<String> results = new LinkedList<String>();
+        if(turnedOn >= 9)
+            return results;
         HashMap<Integer, HashSet<Integer>> hours = new HashMap<Integer,HashSet<Integer>>();
         for(int i = 0; i <= 3; ++i)
             hours.put(i,new HashSet<Integer>());
@@ -34,8 +36,34 @@ class Solution
         ArrayList<Integer> combo = new ArrayList<Integer>();
         generateCombinations(hours, minutes, curDepth, maxDepth, combo, oneCount);
         
-        // Let us 
-        
+
+        int numHours = turnedOn;
+        int numMins = 0;
+        while(numHours >= 0)
+        {
+            // Check toggle here properly too
+            if(numHours <= 3 && numMins <= 5)
+            {
+                Set<Integer> hourVals = hours.get(numHours);    
+                Set<Integer> minVals = minutes.get(numMins);
+                for(int hour : hourVals)
+                {
+                    for(int min : minVals)
+                    {
+                        StringBuilder sb = new StringBuilder("");
+                        sb.append(hour);
+                        sb.append(":");
+                        if(min < 10)
+                            sb.append("0");
+                        sb.append(min);        
+                        results.add(sb.toString());
+                    }
+                }
+                
+            }
+            --numHours;
+            ++numMins;
+        }
         return results;
     }
     
@@ -43,32 +71,34 @@ class Solution
      * Denote as following too
      * zero => left
      * one => right
+     * hour as no trailing zero
+     * minutes is a two digit val : take note of this!
      */
     public void generateCombinations(HashMap<Integer, HashSet<Integer>> hours, HashMap<Integer, HashSet<Integer>> minutes, 
                                      int curDepth, int maxDepth,
                                      ArrayList<Integer> combo, int oneCount)
     {
-        if(curDepth > maxDepth)
+        if(curDepth > maxDepth+1)
             return;
-        else if ( curDepth == maxDepth)
+        else if ( curDepth == maxDepth+1)
         {
             int val = 0;
             for(int i = 0; i < combo.size(); ++i)
                 val += (int)Math.pow(2,i) * combo.get(i);
             if(val <= 59)
             {
-                Set<Integer> myEncountered = minutes.get(curDepth);
+                Set<Integer> myEncountered = minutes.get(oneCount);
                 myEncountered.add(val);
             }
         }
-        else if ( curDepth == 3) // for hours 
+        else if ( curDepth == 4) // for hours 
         {
             int val = 0;
             for(int i = 0; i < combo.size(); ++i)
                 val += (int)Math.pow(2,i) * combo.get(i);
             if(val <= 11)
             {
-                Set<Integer> myEncountered = hours.get(curDepth);
+                Set<Integer> myEncountered = hours.get(oneCount);
                 myEncountered.add(val);
             }
         }
