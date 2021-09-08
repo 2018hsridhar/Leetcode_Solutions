@@ -1,43 +1,70 @@
-// mathematical-based solution works, BUT ONLY in the case of all the numbers being unique ( except for one number ). 
-// does not work if all the numbers can be the same, or a duplicate can appear more than twice
-// Unlikely to solve in the near future
 
+class Solution
+{
 
-class Solution {
-   
+	/*
+  287. Find the Duplicate Number
+  URL = https://leetcode.com/problems/find-the-duplicate-number/
   
-  public int findDuplicate(int[] nums) 
-    {
-        int dupl = -1;
-        // int n = nums.length - 1;
-        
-        if(nums.length == 2)
-            return 1; // duplicate already known here
-        
-        int len = nums.length;
-        int sum = len * ( len + 1 ) / 2;
-        // System.out.printf("n = [%d] \t sum = [%d] \t len = [%d]\n", n, sum, len);
-        
-        for(int i = 0; i < len; ++i)
-        {
-            sum -= nums[i];
-        }
-        // use remainder technique here
-        dupl = len - sum;
-
-        return dupl;
-    }
+	We are allowed to mutate the input array too
+	Typical approaches taken by candidate : utilizing a hashmap/hashset
+		=> always probe if hashset can be used in place of hashmap : halve the in-memory storage here
+	Note : return the first duplicate value with the MINIMAL INDEX too!
+	Oh -> I see where we get tripped up here. Nevermind!
+	
+	Complexity
+	Let N := number of elements in the array
+	Space = O(N)
+	Time = O(N)
+	
+	Using Standard sort function
+	Space = O(1)
+	Time = O(N) + O(NLogN) = O(NlogN)
+	
+	Input array is guaranteed to be between [1,n] inclusive
+	where n := total array length!
+	
+	*/
+    public int findDuplicate(int[] nums)
+	{
+    // int ans = hashmapSolution(array);
+		int ans = msbToggleSolution(nums);
+    return ans;
+  }
+	
+	public int msbToggleSolution(int[] array)
+	{
+		for(int i = 0; i < array.length; ++i)
+		{
+			int val = array[i];
+			int idx = val - 1;
+			if(val < 0)
+				idx = (int)Math.abs(val) - 1;
+			if(array[idx] > 0)
+				array[idx] *= -1;
+			else
+				return (int)Math.abs(val);
+		}
+		return -1;
+	}
+	
+	// Utilize the hashmap/hashset as we go!
+	public int hashmapSolution(int[] array)
+	{
+		HashSet<Integer> encountered = new HashSet<Integer>();
+		for(int i = 0; i < array.length; ++i)
+		{
+			int key = array[i];
+			if(!encountered.contains(key))
+			{
+				encountered.add(key);
+			}
+			else
+			{
+				return key;
+			}
+		}			
+	
+	return -1;
+	}
 }
-
-        
-// for(int i = 0; i < nums.length; ++i )
-// {
-//     for(int j = i+1; j < nums.length; ++j)
-//     {
-//         if(nums[i] == nums[j])
-//         {
-//             dupl = nums[i];
-//             return dupl;
-//         }
-//     }
-// }
