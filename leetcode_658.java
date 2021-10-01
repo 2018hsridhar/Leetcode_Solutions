@@ -14,73 +14,89 @@ utilizes arr.binarySearch(k) method too, to expedite problem solving
 Guaranteed proper bounds and sorted order as well here\
 Note : x can be below target OR above target as well here
 
+It is finnicy due to dumb bounds here for sure -> really have to go with the generalized binary search
+Also having to account for original element is a bit of a PITA!
+
+[1,2,3,4,5]
+3
+17
+
 */
+
+class encap
+{
+    public int val;
+    public int dist;
+    public encap(){}
+    public encap(int val, int dist){this.val = val; this.dist = dist;}
+}
+
 class Solution 
 {
     public List<Integer> findClosestElements(int[] arr, int k, int x) 
     {
         LinkedList<Integer> kClosest = new LinkedList<Integer>();
-        int tIdx = Arrays.binarySearch(arr, x);
         if(x < arr[0])
-            tIdx = -1;
-        else if ( x > arr[arr.length - 1])
-            tIdx = arr.length;
-        int leftPtr = tIdx - 1;
-        int rightPtr = tIdx + 1; 
-        int n = arr.length;
-        System.out.printf("Target idx = %d \t arr length = %d\n", tIdx, arr.length);
-        // Test out seperate iteration order here as well
-        int i = 0;
-        if(tIdx == -1)
         {
-            kClosest.add(arr[0]);
-            ++i;
-        }
-        if(0 <= tIdx && tIdx < arr.length)
-        {
-            // boolean expr1 = (0 <= tIdx);
-            // boolean expr2 = (tIdx < arr.length);
-            // System.out.println(expr1);
-            // System.out.println(expr2);
-            System.out.printf("Adding initial elements\n");
-            kClosest.add(x);
-            ++i;
-        }
-        while(i < k)
-        {
-            if(leftPtr >= 0 && rightPtr < n)
+            for(int i = 0; i < k; ++i)
             {
-                // System.out.printf("Going both ways");
-                int leftVal = arr[leftPtr];
-                int rightVal = arr[rightPtr];
-                if(leftVal < rightVal)
-                {
-                    kClosest.addFirst(leftVal);
-                    --leftPtr;
-                }
-                else
-                {
-                    kClosest.add(rightVal);
-                    ++rightPtr;
-                }
+                if(i >= arr.length)
+                    break;
+                kClosest.add(arr[i]);
             }
-            else if ( leftPtr >= 0 && rightPtr >= n)
+            return kClosest;
+        }
+        // These k closest do not have to be sorted themselves by their distance of closeness ( e.g. given target == 6, return {5,4,3})
+        // but rather, but ascending order ( e..g {3,4,5} for target = 6)
+        else if(x > arr[arr.length - 1])
+        {
+            int kCount = 0;
+            for(int i = arr.length - 1; i >= 0; --i)
             {
-                // System.out.printf("Going left\n");
-                int leftVal = arr[leftPtr];
-                kClosest.addFirst(leftVal);
-                --leftPtr;
+                kClosest.addFirst(arr[i]);
+                ++kCount;
+                if(kCount == k) break;
             }
-            else if ( leftPtr < 0 && rightPtr < n-1)
+            return kClosest;
+        }
+        
+        // Now for the case where target is guaranteed in bounds of [low,high] here
+        // That is, arr[0] <= target <= arr[arr.length - 1]
+        PriorityQueue<encap> maxHeap = new PriorityQueue<encap>(new Comparator<encap>() {
+            @Override
+            public int compare(encap a, encap b) {
+                return b.dist - a.dist; 
+            }
+        }); 
+        
+        // Max heap can maintain a notion of distance ... but not the elements themselves, UNLESS, we have some pairwise comparison stuff 
+        // taking place here as well
+        
+        for(int i = 0; i < arr.length; ++i)
+        {
+            int val = arr[i];
+            int dist = Math.abs(val - x);
+            encap ec = new encap(val,dist);
+            if(maxHeap.size() >= k)
             {
-                int rightVal = arr[rightPtr];
-                kClosest.add(rightVal);
-                ++rightPtr;
+                encap curMaxEncap = maxHeap.peek();
+                int curMax = curMaxEncap.dist;
+                if(dist < curMax)
+                {
+                    maxHeap.poll();
+                    maxHeap.add(ec);    
+                }
             }
             else
-                break;
-            ++i;
+                maxHeap.add(ec);    
         }
+        
+        while(maxHeap.size() > 0)
+        {
+            encap ec = maxHeap.poll();
+            kClosest.add(ec.val);
+        }
+        Collections.sort(kClosest);
         
         return kClosest;
     }
