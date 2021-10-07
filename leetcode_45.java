@@ -41,35 +41,36 @@ nums length bounded by [1,1e4]
 -1 => can jump to end
 -2 => can not jump to the end
 
+Assume in this problem we an reach the last index : so minNumJumps = len(arr) - 1 anyways 
+In this case, we replace current problem with num steps now
+Asume guaranteed length > 2 here
 */
 
 
 class Solution 
 {
-    public int jump(int[] nums) {
+    public int jump(int[] nums)
     {
-        boolean canJump = false;
+        if(nums == null || nums.length < 2)
+            return 0;
+        
         int n = nums.length;
-        nums[n-1] = -1; // last elem by default
+        int minNumJumps = n - 1;
+        nums[n-1] = 0; // last elem by default ( and min num from last el ) 
         for(int i = n - 2; i >= 0; --i)
         {
+            int minJumpsFromPos = (n-i); // we ran into data overflow somehow? OH ... I see
+            // int minJumpsFromPos = Integer.MAX_VALUE - 1; // wow this is kinda crummy for sure!
             int numSteps = nums[i];
             for(int j = 1; j <= numSteps; ++j) // perform bounds check as well
             {
                 int nextPos = i + j;
-                // System.out.printf("For nextPos = %d, nums[nextPos] = %d\n", nextPos, nums[nextPos]);
                 if(nextPos < n)
-                {
-                    if(nums[nextPos] == -1)
-                    {
-                        nums[i] = -1;
-                        break;
-                    }
-                }
+                    minJumpsFromPos = Math.min(minJumpsFromPos, 1 + nums[nextPos]);
             }
-            // System.out.printf("For i = %d, nums[i] = %d\n", i, nums[i]);
+            nums[i] = minJumpsFromPos;
         }
-        canJump = (nums[0] == -1);
-        return canJump;
+        minNumJumps = nums[0];
+        return minNumJumps;
     }
 }
