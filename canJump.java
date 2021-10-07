@@ -38,6 +38,9 @@ You always start @ the array's first index
 nums[i] guaranteed to be in Z_{nonneg}, and bounded in [0,1e5]
 nums length bounded by [1,1e4]
 
+-1 => can jump to end
+-2 => can not jump to the end
+
 */
 
 
@@ -46,8 +49,27 @@ class Solution
     public boolean canJump(int[] nums) 
     {
         boolean canJump = false;
-        
-        
+        int n = nums.length;
+        nums[n-1] = -1; // last elem by default
+        for(int i = n - 2; i >= 0; --i)
+        {
+            int numSteps = nums[i];
+            for(int j = 1; j <= numSteps; ++j) // perform bounds check as well
+            {
+                int nextPos = i + j;
+                // System.out.printf("For nextPos = %d, nums[nextPos] = %d\n", nextPos, nums[nextPos]);
+                if(nextPos < n)
+                {
+                    if(nums[nextPos] == -1)
+                    {
+                        nums[i] = -1;
+                        break;
+                    }
+                }
+            }
+            // System.out.printf("For i = %d, nums[i] = %d\n", i, nums[i]);
+        }
+        canJump = (nums[0] == -1);
         return canJump;
     }
 }
