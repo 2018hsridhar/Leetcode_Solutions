@@ -33,6 +33,10 @@ Edge cases
 (G) [[2,3],[4,5],[7,9],[10,12]] : [1,5]
     [[1,5],[7,9],[10,12]]
 
+Complexity :
+Let N := len(intervals)
+Time = O(N)
+Space = O(1)
 
 */
 
@@ -41,11 +45,31 @@ class Solution
 {
     public int[][] insert(int[][] intervals, int[] newInterval) 
     {
+        boolean insertedInterval = false;
         ArrayList<int[]> mergedInts = new ArrayList<int[]>();
-        
+        for(int i = 0; i < intervals.length; ++i)
+        {
+            int[] currInt = intervals[i];
+            if(hasOverlap(currInt, newInterval))
+                newInterval = merge(currInt, newInterval);
+            else if ( currInt[1] < newInterval[0])
+                mergedInts.add(currInt);
+            else if ( currInt[0] > newInterval[1])
+            {
+                if(insertedInterval == false)
+                {
+                    mergedInts.add(newInterval);
+                    insertedInterval = true;
+                }
+                mergedInts.add(currInt);
+            }
+        }
         
         
         // Convert : ArrayList -> Array
+        if(insertedInterval == false)
+            mergedInts.add(newInterval);
+        
         int n = mergedInts.size();
         int[][] results = new int[n][2];
         for(int i = 0; i < mergedInts.size(); ++i)
@@ -56,4 +80,24 @@ class Solution
         }
         return results;
     }
+    
+    // Luckily, the order of operations in either cases really should NOT matter too much 
+    
+    public boolean hasOverlap(int[] lhs ,int[] rhs)
+    {
+        if(lhs[0] <= rhs[0] && rhs[0] <= lhs[1])
+            return true;
+        if(lhs[0] <= rhs[1] && rhs[1] <= lhs[1])
+            return true;
+        return false;
+    }
+    
+    public int[] merge(int[] lhs, int[] rhs)
+    {
+        int[] newInterval = new int[2];
+        newInterval[0] = Math.min(lhs[0],rhs[0]);
+        newInterval[1] = Math.max(lhs[1],rhs[1]);
+        return newInterval;
+    }
+    
 }
