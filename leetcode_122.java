@@ -54,15 +54,68 @@ A local minima and a local maximum need to be established in comparison to a bas
 
 */
 
+/*
+    Have a set of days corresponding to their prices of given stocks
+    Can hold @ most one share of the stock at any time
+    Can buy it then sell it on the same day ( but this nets a profit of zero anyways ) 
+    Return max profit possible
+    
+    URL = https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/
+    122. Best Time to Buy and Sell Stock II
+    Minima = 0 across the board
+    
+    Assume prices fits in-mem, and is a reasonable array
+    Stock prices are also never negative : [0,1e5] here
 
-class Solution {
+    BUDP Complexity : 
+    Let N := len(prices)
+    Time = O(N^2)
+    Space = O(N)
+
+    Edge Case Testing : 
+    (A) [3,6,1,4]
+        => 6
+    (B) [5,4,3,2,1] [a_1,a_2,...] in strictly desc order
+        => 0
+    (C) [1,1] : [a,a,...]
+        => 0
+    (D)
+    (E)
+    
+*/
+
+class Solution 
+{
     public int maxProfit(int[] prices) 
     {
         int maxProfit = 0;
-        if(prices.length <= 1)
-            return 0;
+        int n = prices.length;
+        int[] maxProfDays = new int[n];
+        maxProfDays[n-1] = 0;
+        for(int i = n-2; i >= 0; --i)
+        {
+            int daysBestProfit = 0;
+            int buyPrice = prices[i];
+            // [2] Account for no buy on given day i => return (i+1) result here then
+            for(int j = i+1; j < n; ++j)
+            {
+                int sellPrice = prices[j];
+                int netProfit = sellPrice - buyPrice;
+                if(netProfit > 0)
+                {
+                    int futureDaysProf = 0;
+                    if(j+1 < n)
+                         futureDaysProf = maxProfDays[j+1];
+                    if((j + 1) == n)
+                        futureDaysProf = 0;
+                    daysBestProfit = Math.max(daysBestProfit, netProfit + futureDaysProf);
+                }
+            }
+            maxProfDays[i] = Math.max(daysBestProfit, maxProfDays[i+1]);
+        }
         
         
+        maxProfit = maxProfDays[0];
         return maxProfit;
     }
 }
