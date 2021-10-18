@@ -45,37 +45,46 @@ Goal : aim from explicit -> implicit solution : yes it is O(1) still, BUT, ... w
 */
 
 class Solution {
+    // in-place modification based solution ( but still allocates one SLL elsewhere ) 
     public ListNode partition(ListNode head, int x) 
     {
-         if(head == null || head.next == null)
+        if(head == null || head.next == null)
             return head;
-        ListNode cur = head;
-        while(cur != null)
+        
+        ListNode sentinel = new ListNode(Integer.MAX_VALUE);
+        sentinel.next = head;
+        ListNode cur = sentinel;
+        ListNode fwd = sentinel.next;   // start of the list here
+        ListNode lessX = new ListNode(Integer.MIN_VALUE);
+        ListNode lessX_tail = lessX;
+        while(fwd != null)
         {
-            if(cur.val < x)
+            // System.out.printf("cur = %d \t fwd = %d\n", cur.val, fwd.val);
+            if(fwd.val < x)
             {
-                x_cur.next = new ListNode(cur.val);
-                x_cur = x_cur.next;
+                // Append to lessThanX list
+                ListNode temp = fwd.next;
+                fwd.next = null;
+                lessX_tail.next = fwd;
+                lessX_tail = lessX_tail.next;
+                // Remodify greaterThanX list
+                
+                fwd = temp;
+                cur.next = fwd;
             }
             else
             {
-                y_cur.next = new ListNode(cur.val);
-                y_cur = y_cur.next;                
+                cur = fwd;
+                fwd = cur.next;
             }
-            cur = cur.next;
         }
-
-        // check singleton cases as well too!
-        if(lessX.next == null)
-            return lessY.next;
-        else if ( lessY.next == null)
-            return lessX.next;
-        ListNode res = lessX.next;
-        x_cur.next = lessY.next;
-        return res;
+        
+        lessX_tail.next = sentinel.next;
+        return lessX.next;
     }
         
         
+    // NOT an in-place modification ( allocates two distinct SLLs ) 
     public ListNode explicit(ListNode head, int x) 
     {
         if(head == null || head.next == null)
