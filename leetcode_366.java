@@ -1,9 +1,3 @@
-/*
-URL = https://leetcode.com/problems/find-leaves-of-binary-tree/
-366. Find Leaves of Binary Tree
-
-*/
-
 /**
  * Definition for a binary tree node.
  * public class TreeNode {
@@ -19,7 +13,25 @@ URL = https://leetcode.com/problems/find-leaves-of-binary-tree/
  *     }
  * }
  */
-class Solution {
+
+/*
+
+Guaranteed non-empty property here
+TEST BENCH
+(A) [1]
+(B) [1,2,3,4,5]
+(C) [1,2]
+(D) [1,2,3,null,4,null,9]
+(E) [1,2,3,null,5,null,9,4,6,null,null,10]
+
+Complexity
+Let N := #-vertices/nodes, H := height ( log_2(N) balanced, N unbalanced )
+Time = O(N)
+Space = O(H) ( implicit ) O(1) explicit
+*/
+class Solution 
+{
+    // Do problem without an initial height retrieval OR allocates all lists in the lists initially
     public List<List<Integer>> findLeaves(TreeNode root) 
     {
         List<List<Integer>> leaves = new ArrayList<List<Integer>>();
@@ -30,7 +42,7 @@ class Solution {
     }
     
     // Head recursive ( note traversal order as well ) 
-    public int getLeaves(TreeNode root, List<List<Integer>>)
+    public int getLeaves(TreeNode root, List<List<Integer>> leaves)
     {
         if(root == null)
         {
@@ -39,15 +51,41 @@ class Solution {
         int maxDepth = 1; // default
         if(root.left == null && root.right == null)
         {
-            
+            if(leaves.size() == 0)
+            {
+                List<Integer> placement = new ArrayList<Integer>();
+                placement.add(root.val);
+                leaves.add(placement);
+            }
+            else
+            {
+                List<Integer> placement = leaves.get(0);
+                placement.add(root.val);
+            }
             maxDepth = 1;
             return maxDepth;
         }
-        if(root.left != null)
+        else    // If either is null, that means either or : just do quick null checks here
         {
-        }
-        if(root.right != null)
-        {
+            if(root.left != null)
+            {
+                maxDepth = Math.max(maxDepth, 1+getLeaves(root.left,leaves));
+            }
+            if(root.right != null)
+            {
+                maxDepth = Math.max(maxDepth, 1+getLeaves(root.right,leaves));
+            }
+            if(leaves.size() < maxDepth)
+            {
+                List<Integer> placement = new ArrayList<Integer>();
+                placement.add(root.val);
+                leaves.add(placement);
+            }
+            else
+            {
+                List<Integer> placement = leaves.get(maxDepth - 1);
+                placement.add(root.val);
+            }
         }
         
         return maxDepth;
