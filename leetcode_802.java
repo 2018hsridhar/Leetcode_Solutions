@@ -1,142 +1,114 @@
 /*
-THOUGHT PROCESS : 
-https://leetcode.com/problems/find-eventual-safe-states/
-802. Find Eventual Safe States
+THOUGHT PROCESS ::
 
-[1,10,000] nodes here
-Sorted in strictly increasing order
-Can have self-loops : whoops 
-Standard graph algos as usual : BFS, DFS, Kahn's Topological Sort   
-'k' generalizes for ANY walk, and is supposed to be helpful for cycle avoidance too.
-'k' also generalizes across an entire set of walks : imagine imposing a boundary on a SET!
+Is going to use recursion ( BFS/DFS ) underneath as well as backtracking to 
+eliminate failing candidates
 
-COMPLEXITY : 
-TIME = 
-SPACE = 
 
-Edge case testing : 
-(1) [[1,2],[2,3],[5],[0],[5],[],[]]
-    Output : [2,4,5,6]
-    Why not : [0,1,3]? Because you have a cycle here with the directed edges!
-    A cycle is a WALK. It can be any walk
-(2) Isolated sets : [[], [], [], []]
-    Output : [0,1,2,3]
-(3) a Linked List : [[1],[2],[3],[4]]
-    Output : 4
-(4) Disjoint sets case : [[1],[2],[3],[5],[6],[7]]
-    Output : [4,8]
-(5) Self loops case : [[0],[1],[2],[3]]
-    Output : []
-    
-    
-Yes : dfs(1) explores dfs(2), and we have the potential of already visiting 2
-now dfs(3) explores dfs(0), but we explored that too
-Having a node already visited IS NOT always a gauarantee of cycle detection too!
-Any WALK can include the empty walk too, as a subset
+Complexity
+Let N := #-nodes
+Let H := longest path
+Time = O(N)
+Space = O(H) ( implicit ) O(N) ( explicit )
 
-CALL STACK REPRESENTATION : 
+TEST BENCH 
+(A) ( *** self loop *** ) [[0],[1],[3],[2]]
+(B) [[],[0,2,3,4],[3],[4],[]]
+    *** wrong answer ***
+(C)
+(D)
+(E)
 
-dfs(0)
-    dfs(1)
-        dfs(2)
-        dfs(3)
-            dfs(0)
-                dfs(1)
-                    ...
-                dfs(2)
-                    ...
-    dfs(2)
-        dfs(5)
+Luckily it is a 0-indexed graph ( ALWAYS as this )
+Arguement with DFS
+(1) That we need only one visited set, as if we DFS(B) from a DFS(A), if \exist outgoing (A,B), then we need not perform DFS(B) again as 
+the DFS(A) would have performed its visitation
+(2) That we can set up two distinct sets - terminal nodes, visited nodes - and ask in the recursive func body before the callee function if
+our current node is a member of the following
+(a) visited & terminal
+(b) non-visited
+(c) visited & non-termianl
+At (c), we ended up in a cycle -> so all paths invalidated here ( return false on the BACKTRACK upwards ) 
+At (b), we continue the algo
+At (a), we set the value to TRUE on the backtrack / callback
 
-We already have "n" number of nodes
-The default answer is : [0,...,n]
-Suppose we have a cycle including nodes 
-{0,2,4,6} 
+Make distinction : root->internal->leaf nodes
+Each node labelled with unique values
 
-Also nice : we get the zero-indexing property here too, as well!
-    
-Graph representation here be an adjacency list ( not an adjacency matrix ) 
-*/
-
-/*
-Use integer array to represent following
-
-0 => unexplored
-1 => has cycle
-2 => has no cycle
+Correct BUT order incorrect
+We passed the given test cases
 
 */
 class Solution 
 {
+    // Provided our iterative approach, it will be in ASC order
     public List<Integer> eventualSafeNodes(int[][] graph) 
     {
-        List<Integer> safeNodes = new LinkedList<Integer>();
+        List<Integer> eventualSafe = new LinkedList<Integer>();
+        Set<Integer> terminal = new HashSet<Integer>();
+        Set<Integer> visited = new HashSet<Integer>();
         int n = graph.length;
-        int[] cycles = new int[n];
-        for(int i = 0; i < n; ++i)
-            cycles[i] = 0;
-        
         for(int i = 0; i < n; ++i)
         {
-            int rootNode = i;
-            HashSet<Integer> visited = new HashSet<Integer>();
-            if(cycles[i] == 0)
-                dfs(rootNode, cycles, visited, graph);
+            int[] adj = graph[i];
+            if(adj.length == 0)
+            {
+                terminal.add(i);
+            }
         }
         
         for(int i = 0; i < n; ++i)
         {
-            if(cycles[i] != 1)
-                safeNodes.add(i);
+            if(!visited.contains(i))
+            {
+                boolean isSafe = dfs(graph, i, terminal, visited, eventualSafe);
+            }
         }
-        
-        return safeNodes;
+        Collections.sort(eventualSafe);
+        return eventualSafe;
     }
     
-    /*
-    Ran inacto a TLE error for sure ( probably in deep copy step here ) 
-     Two terminating conditions for DFS recursion
-     1. At a leaf/childless node
-     2. Potentially hit already visited node during the traversal
-     Exceeds the memory limit though!
-        => yep : deep copying in a recursive function will break you!
-    */
-    public void dfs(int root, int[] cycles, HashSet<Integer> visited, int[][] graph)
+    // Base case : minimal subproblem
+    // terminating case : when we have a means to end the recursion
+    // Must check case where we land on a safe node ( but NOT a terminal node ) !
+    private boolean dfs(int[][] graph, int node, Set<Integer> terminal, Set<Integer> visited, List<Integer> eventualSafe)
     {
-        int[] adjList = graph[root];
-        if(adjList == null || adjList.length == 0)
+        // BASE / TERMINATING CASE ( recursion needs its terminating case )
+        if(visited.contains(node))
         {
-            cycles[root] = 2;
-            for(int i : visited)
-            {
-                if(cycles[i] == 0)
-                    cycles[i] = 2;
-            }
-            return;
+            if(terminal.contains(node) || eventualSafe.contains(node))
+                return true;
+            else
+                return false;
         }
         else
         {
-            visited.add(root);
-            for(int child : adjList)
+            visited.add(node);
+            int[] adj = graph[node];
+            int sz = adj.length;
+            boolean isSafe = true; // assume is a safe node until proven otherwise
+            for(int i = 0; i < sz; ++i)
             {
-                if(visited.contains(child))
-                {
-                    cycles[root] = 1;
-                    for(int i : visited)
-                        cycles[i] = 1;
-                    return;
-                }
-                else
-                {
-                    // Really hating this deep copy operation though!
-                    HashSet<Integer> deepCopy_visited = new HashSet<Integer>();
-                    for(int i : visited)
-                        deepCopy_visited.add(i);
-                    dfs(child, cycles, deepCopy_visited, graph);    
-                }
-                
+                int childNode = adj[i];
+                boolean childIsSafe = dfs(graph, childNode, terminal, visited, eventualSafe);
+                // System.out.printf("parent = %d \t Child node = %d \t isSafe = %s\n", node, childNode, childIsSafe);
+                if(childIsSafe == false)
+                    isSafe = false;
             }
+            // Notice update is strictly in backtrack here
+            // Could sort as well too
+            if(isSafe)
+                eventualSafe.add(node);
+            return isSafe;
         }
     }
-    
 }
+
+
+
+
+
+
+
+
+
