@@ -1,72 +1,100 @@
 /*
 
-URL = https://leetcode.com/problems/interval-list-intersections/
 986. Interval List Intersections
+URL = https://leetcode.com/problems/interval-list-intersections/
 
-Two lists -> two pointers for traveral
-Pairwise disjoint and in sorted ordedr helps consideraby!
+COMPLEXITY
+Let M := len(firstList)
+Let N := len(secondList)
+Let K := number of intersections
+Time = O(M+N)
+Space = O(1)
 
-Iterate both SLL pointers { i, j } . While less then their lengths, keep going
-One you are done with one ... you should not have any more remaining intersections anyways ( I think )? 
+TEST BENCH
+(A) [], []
+( *** provided *** ) ( *** never happens *** ) 
+(B) [[0,2],[5,10],[13,23],[24,25]]
+    [[1,5],[8,12],[15,24],[25,26]]
+(C) [[1,2],[3,4]], [[2,3],[4,5]]
+    [[2,2],[3,3],[4,4]]
+(D) [], [[2,3],[4,5]]
+    []
+(E) [[1,2],[3,4]], []
+    []
+(F) [[1,2],[3,5],[6,7],[8,100]], [[1,3],[4,5]]
+    [[1,2],[3,3],[4,5]]
 
-Easiest conversion : ArrayList append method -> to Array ( size of result is not known, and O(1) insertion time is desirable here ) 
-Helps that itervals are pairwise disjoint ( the sorted list has no intersections ) !
+Each list is PAIRWISE DISJOINT ( Take note of that ... no nesting within cases here at least ) 
+Note : given [a,b] and [b,c] where a < c but both shared same b -> return [b,b] as intersection ( denotes a point in space ) 
+Yes one list may be empty ( or even both ) 
 
-Focus on increment of pointers during merge of two sorted lists!
-SRP : set aside extra class function to determine if two timeslots intersect!
+Is a set of real numbers : intersections of closed intervals are alwas closed intervals
+Intervals in each lists are always closed as well
 
-Test case 1 : one of these lists is an empty list or a null list - > return empty array
-
-What type of order relation defines our intersection ( <=, or < )? Is a gotcha
-
-Time complexity : Desirably [T,S] = [O(N), O(1)] where N := number of elements total in both SLLs
-
-Getting tripped up : dealing with a full merge or a partial merge of intervals?
-Can we get tripped up testing or coding for each type of merge?
+Strategies : two pointers, 
+Pairwise disjoint property means that pointers can easily be advanced, even if intervals in A are close
 
 */
-
 
 class Solution 
 {
     public int[][] intervalIntersection(int[][] firstList, int[][] secondList) 
     {
-        
-        if(firstList.length == 0 || secondList.length == 0)
-            return new int[0][0];
-        
-        int i = 0;
-        int j = 0;
-        ArrayList<int[]> mergedIntervals = new ArrayList<int[]>();
-        while(i < firstList.length && j < secondList.length)
+        List<int[]> intersects = new ArrayList<int[]>();
+        int m = firstList.length;
+        int n = secondList.length;
+        int p1 = 0;
+        int p2 = 0;
+        while(p1 < m && p2 < n)
         {
-            int[] ts_one = firstList[i];
-            int[] ts_two = secondList[j];
-            
-            int[] merged = merge(ts_one, ts_two);
-            ++i;
-            ++j;
+            int[] i1 = firstList[p1];
+            int[] i2 = secondList[p2];
+            if(hasOverlap(i1,i2))
+            {
+                int[] intersection = getIntersection(i1,i2);
+                intersects.add(intersection);
+            }
+            if(i1[1] > i2[1])
+            {
+                ++p2;
+            }
+            else
+            {
+                ++p1;
+            }
         }
         
-        // ArrayList -> Array Conversion step
-        int[][] results = new int[mergedIntervals.size()][2];
-        for(int x = 0; x < mergedIntervals.size(); ++x)
-            results[x] = mergedIntervals.get(x);
-        return results;
+        // Convert Arrayist to array
+        int k = intersects.size();
+        int[][] intersections = new int[k][2];
+        for(int i = 0; i < k; ++i)
+        {
+            int[] interval = intersects.get(i);
+            intersections[i][0] = interval[0];
+            intersections[i][1] = interval[1];
+        }
+        return intersections;
     }
     
-    public boolean intervalsIntersect(int[] A, int[] B)
+    // note : we do not merge in this code :-).
+    // Remember : equality strictness matters as well : [2,3] and [3,4] possess NO overlap, but [2,3] and [2,4] do possess an overlap
+    private boolean hasOverlap(int[] i1, int[] i2)
     {
-        if(A[1] < B[0])
-            return false;
-        else if ( B[1] < A[0] )
-            return false;
-        return true;
+        // Special case of consecutive STEP-BY-STEP intervals
+        if(i1[0] <= i2[0] && i2[0] <= i1[1])
+            return true;
+        if(i2[0] <= i1[0] && i1[0] <= i2[1])
+            return true;
+        return false;
     }
     
-    public int[] merge(int[] A, int[] B)
+    // NOT merging : getting intersection -> reverse plz
+    // [1,3],[3,5] => [3,3] => is ok
+    public int[] getIntersection(int[] i1, int[] i2)
     {
-        
+        int[] intersection = new int[2];
+        intersection[0] = Math.max(i1[0], i2[0]);
+        intersection[1] = Math.min(i1[1], i2[1]);
+        return intersection;
     }
-    
 }
