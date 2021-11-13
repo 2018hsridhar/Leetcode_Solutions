@@ -1,155 +1,198 @@
 /*
 
-URL = https://leetcode.com/problems/design-circular-queue/
 622. Design Circular Queue
+URL = https://leetcode.com/problems/design-circular-queue/
 
-THOUGHT PROCESS : 
-Queues tend to be implemented as either arays or linked-lists underneath
-A SLL has that nice property of the front being quickly accessible ( but not the rear ) 
-Arrays have O(1) access across all index variables - quick front/back operations here
-Do not use the "build-in" queue data structure
-Most likely needs the modulus operator too
+Ring buffer data structure
+Make use of spaces in front of queue
 
-Unlike the SLL, insertion/deletion is performed in the frontend/backend.
-In SLLs, insertion/deletion performed in the backend.
+Either implement as an array ( contiguous memory block : resizing difficult ) 
+or as a SLL ( dynamic memory : resizing easier )
+If as a SLL : need a pointer back to the front now
 
+Complexity
+Let _ := _____
+Time = 
+Space = 
 
+Test Cases : 
+(A) ["MyCircularQueue","enQueue","enQueue","enQueue","enQueue","Rear","isFull","deQueue","enQueue","Rear"]
+    [[3],[1],[2],[3],[4],[],[],[],[4],[]]
+(B) no enques : just executed .Front() or .Rear()
+    ["MyCircularQueue","Front"]
+    [[3], []]
+(C) ["MyCircularQueue","Rear"]
+    [[3], []]
+(D) ["MyCircularQueue","enQueue","enQueue","enQueue","enQueue", "Front","Front","enQueue", "Rear","Rear"]
+    [[3],[1],[2],[3],[4],[],[],[4],[],[]]
+    [null,true,true,true, false, 1, 1, false, 3, 3]
+    enQueue works as expected
+(E) ["MyCircularQueue","enQueue","enQueue","deQueue", "deQueue","deQueue","deQueue"]
+    [[3],[1],[2],[],[],[],[]]
+(F) ["MyCircularQueue", "enQueue", "enQueue", "enQueue", "isFull", "deQueue", "deQueue", "deQueue", "isEmpty", "enQueue", "enQueue", "enQueue", "isFull"]
+[[3], [1], [2], [3], [],[],[],[],[],[1],[2],[3],[]]
+(G) ["MyCircularQueue", "enQueue", "Front","Rear", "enQueue", "enQueue", "Front", "Rear", "deQueue", "enQueue", "Front", "Rear", "deQueue", "deQueue", "Front", "Rear"]
+[[3], [1], [], [], [2], [3], [],[],[],[4],[],[], [], [], [], []]
 
+Question to ask : what data am I storing here? Do we support duplicates as well?
+Answer : Yes, we support duplicate integers as well.
 
-Circular queue = "ring buffer"
-Key question to ask in a circular buffer : are inserts performed IF the buffer is full or not ( a.k.a. do we overwrite already existing data )?
+They need to ask if front() and rear() is an operation akin to peek() or pop() ?
+    -> enque()/dequeue() : akin to pop
+    -> is it a read-only operation?
 
-Testing/Capacity Planning
-(1) Queue size is reasonably bounded by the closed interval [1,1000]
-(2) Values bounded by integers in closed interval [0,1000]
--> Use (-1) to denote an invalid element? 
+Closely observe the number of external calls made to each operation : comes in useful for APIs
 
-(3) 3000 calls maximum made to each method
-
-Oh ... if front is unfilled ( via dequeu ) - we can fill up from there
-But we can not fill once array is full ( that is, when rearPtr = frontPtr ) . 
-
-Still a linear data structure
-Operations still FIFO based
-
-Problem makes sense after consideration of the two pointers technique
-
-EDGE CASE TESTING : 
-(1) Singleton size queue
-- enqueue(x) should not work twice
-- deQueue() should also not work twice
-sz = 1 ; idx = 0 ; (o + 1 ) % 1 = 0 => case fails quickly
-
-
-(2) Queue of k elememts, not fully filled
-
-
-(3) Queue of k elements, more than fully filled
 
 */
 
+// Analogize "this" to be a reference to our object here
+class Node
+{
+    public int val;
+    public boolean filled;
+    public Node next;
+    
+    public Node()
+    {
+        this.val = 0;
+        this.filled = false;
+        this.next = null;
+    }
+    
+    public Node(int val, boolean filled, Node next)
+    {
+        this.val = val;
+        this.filled = filled;
+        this.next = next;
+    }
+}
+    
 class MyCircularQueue 
 {
     int size;
-    int[] elements;
-    int frontPtr;
-    int rearPtr;
+    int numEls;
+    Node head;
+    Node firstPtr;
+    Node lastPtr;
+ 
+    private Node buildList(int k)
+    {
+        Node head = new Node();
+        Node cur = head;
+        for(int i = 1; i < k; ++i)
+        {
+            Node nextEl = new Node();
+            cur.next = nextEl;
+            cur = nextEl;
+        }
+        // Now at end : pointer to the head
+        cur.next = head; // works in singleton case : loop NOT evaluated here
+        return head;
+    }
     
+    // Constructors initialize class/object variables!
     public MyCircularQueue(int k) 
     {
-        elements = new int[k];
+        numEls = 0;
         size = k;
-        // Initialize each leement with (-1) to denote empty space
-        for(int i = 0; i < k; ++i)
-            elements[i] = -1;
-        
-        frontPtr = 0;
-        rearPtr = 0;
+        head = buildList(k);
+        firstPtr = head;
+        lastPtr = head;
     }
     
-    // Can enque an empty ring buffer
-    // As seen in diagram : front pointer should always move back
-    // One ptr to use consistently here only!
+    // Logic not correct : what if the first case in fact for enqueue?
+    // Didn't this trip you up a bit earlier? 
     public boolean enQueue(int value) 
     {
-        // SINGLETON QUEUE CASE
-        if(size == 1)
+        boolean opStat = true;
+        Node nextEl = lastPtr.next;
+        if(isEmpty()) // special case
         {
-            if(elements[0] == -1)
-            {
-                elements[0] = value;
-                return true;
-            }
-            else
-                return false; // already filled : do not try out here
+            lastPtr.val = value;
+            lastPtr.filled = true;
+            opStat = true;
+            numEls++;
+            return opStat;
         }
-        
-        
-        // NON-SINGLETON QUEUE CASE
-        // Check if rear ptr can be incremented
-        rearPtr = (( rearPtr + 1 ) % size );
-        if(elements[rearPtr] != -1)
-            return false; // a value already exists here!
-        if(rearPtr == frontPtr)
-            return false; // already incremented : clearly equals here!
-        
-        elements[rearPtr] = value;
-        return true;
+        else if(nextEl.filled == false)
+        {
+            nextEl.val = value;
+            nextEl.filled = true;
+            lastPtr = nextEl;
+            opStat = true;
+            numEls++;
+        }
+        else
+        {
+            opStat = false;            
+        }
+        return opStat;
     }
     
-    // Can not dequeue an empty ring buffer
-    // Not sure about this operatino though
-    // Works with frontPtr only
-    // But what if going to a part of circular buffer which is empty ( e.g. 0->-1)
+    // Is dequeue for the single el case special though?
     public boolean deQueue() 
     {
-       // Check if rear ptr can be decremented ( and not go past frontPtr )
-        if(elements[frontPtr] == -1)
-            return false; // No value even present here
-        
-        elements[frontPtr] = -1;
-        frontPtr = (( frontPtr - 1 ) % size );
-        return true; 
+        boolean opStat = true;
+        if(isEmpty())
+        {
+            opStat = false;
+        }
+        else
+        {
+            // Can we leverage size field as well?
+            // Careful : firstPtr can equal lastPtr, but never supersede it!
+            Node nextEl = firstPtr.next;
+            firstPtr.val = 0;
+            firstPtr.filled = false;
+            if(numEls > 1)
+            {
+                firstPtr = nextEl;
+            }
+            --numEls;
+            opStat = true;
+        }
+        return opStat;        
     }
     
+    // Yes we had an answer : you forgot to read
+    // Check if queue is empty before return
     public int Front() 
     {
-        if(elements[frontPtr] == -1)
+        int ans = -1;
+        if(isEmpty())
+        {
             return -1;
-        return elements[frontPtr];
+        }
+        if(firstPtr.filled == false)
+            ans = -1;
+        else
+            ans = firstPtr.val;
+        return ans;
     }
     
-    public int Rear()
+    public int Rear() 
     {
-        if(elements[rearPtr] == -1)
+        int ans = 0;
+        if(isEmpty())
+        {
             return -1;
-        return elements[rearPtr];
+        }
+        if(lastPtr.filled == false)
+            ans = -1;
+        else
+            ans = lastPtr.val;
+        return ans;
     }
     
-    // Can not just check by the size variable here
-    // Use "frontPtr", "rearPtr" approaches
     public boolean isEmpty() 
     {
-        if(size == 0)
-            return true;
-        
-        if(Math.abs(rearPtr - frontPtr) != 0)
-            return true;
-        
-        return false;
+        return (numEls == 0);
     }
     
-    // is full if rearPtr = frontPtr or ( rearPtr + 1 ) % n = frontPtr
     public boolean isFull() 
     {
-        if(frontPtr == rearPtr)
-            return true;
-        
-        int nextRearPtr = ((rearPtr + 1 ) % size );
-        if(nextRearPtr == frontPtr)
-            return true;
-        
-        return false;
+        return (numEls == size);
     }
 }
 
