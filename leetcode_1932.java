@@ -79,7 +79,7 @@ class Solution
     {
         TreeNode newRoot = null;
         List<Wrapper> fringe = new ArrayList<Wrapper>();
-        Queue<TreeNode> toExplore = new Queue<TreeNode>();
+        Queue<TreeNode> toExplore = new LinkedList<TreeNode>();  // abstract class needs a concrete class instantiation on the RHS
         HashMap<TreeNode, Wrapper> rangeInfo = new HashMap<TreeNode, Wrapper>();
         Set<TreeNode> rootSet = new HashSet<TreeNode>();
         
@@ -95,7 +95,7 @@ class Solution
         {
             TreeNode cur = trees.get(i);
             Wrapper metadata = new Wrapper();
-            if(!rangeInfo.containsKey(cur))
+            if(cur != null && !rangeInfo.containsKey(cur))
             {
                 metadata.node = cur;
                 if(cur.left != null)
@@ -108,37 +108,79 @@ class Solution
                 }
                 rangeInfo.put(cur, metadata);
             }
-            toExplore.add(metadata);
+            toExplore.add(cur);
         }
         
         // [3] Initialize the fringe and first root node, along with the root set
-        TreeNode initRoot = trees.get(0);
-        rootSet.add(initRoot);
-        if(initRoot.left != null)
-            fringe.add(initRoot.left);
-        if(initRoot.right != null)
-            fringe.add(initRoot.right);
+        newRoot = trees.get(0);
+        rootSet.add(newRoot);
+        if(newRoot.left != null)
+            fringe.add(rangeInfo.get(newRoot.left));
+        if(newRoot.right != null)
+            fringe.add(rangeInfo.get(newRoot.right));
         
         // [4] The meat of our algorithm here
+//        List<Wrapper> fringe = new ArrayList<Wrapper>();
+//         Queue<TreeNode> toExplore = new LinkedList<TreeNode>();  // abstract class needs a concrete class instantiation on the RHS
+//         HashMap<TreeNode, Wrapper> rangeInfo = new HashMap<TreeNode, Wrapper>();
+//         Set<TreeNode> rootSet = new HashSet<TreeNode>();
+        
+        // Handle null pointer exception later
         while(!toExplore.isEmpty())
         {
-            if(toExplore.size() == 1)
+            // Incorporate terminating condition into loop logic
+            if(toExplore.size() == rootSet.size())
             {
                 break;    
             }
+            while(!fringe.isEmpty())
+            {
+                Wrapper candidate = fringe.remove(0);
+                // If either children are null : well hey, they are infinites too. Leverage that as well.
+                TreeNode testNode = candidate.node; 
+                TreeNode lst = testNode.left;
+                TreeNode rst = testNode.right;
+                int testLeft = candidate.min;
+                int testMax = candidate.max;
+                if(rangeInfo.containsKey(testNode))
+                {
+                    // Now perform range tests , as an appends is a possibility here
+                    // remember this : the append in itself is just the hashmaps left nad right too : why not just port that over?
+                    
+                    // provided append tests pass : if not, return null root ( early termination ) 
+                    TreeNode parent = testNode;
+                    parent.left = testNode.left;
+                    parent.right = testNode.right;
+                    rangeInfo.remove(testNode); // we kick this mini BST out cuz it was concatenated here
+                    
+                    // Add the new fringe nodes now
+                    if(lst != null) fringe.add(rangeInfo.get(lst));
+                    if(rst != null) fringe.add(rangeInfo.get(rst));
+                    
+                    // Go update the root node's range information now
+                    // Note : aways update according to the fringe valies anyways : as the depths represent a property too!
+                    
+                    // Check if we need a new root node now
+                    if(fringe.isEmpty())
+                    {
+                        break;
+                    }
+                }
+            }
+            
+            // Grow a seperate subtree, as the root set is empty here
+            if(fringe.isEmpty())
+            {
+                if(!rootSet.contains(newRoot))
+                    rootSet.add(newRoot);
+                newRoot = toExplore.poll(); 
+            }
         }
         
-        
+        if(rootSet.size() != 1)
+            return null;
         
         return newRoot;
     }
 }
-
-
-
-
-
-
-
-
 
