@@ -31,6 +31,8 @@ COMPLEXITY
 Time = ___
 Space = ___
 
+Node vals are known to be positives in range of [1,50000]
+
 TEST CASES
 (A)
 (B)
@@ -49,6 +51,10 @@ Remember that we must maintain the count of operatinos here too
 Strategies : Hashtable, Queue, BFS ( Fringe-esque manner ) or DFS ( fringe-esque manner )
             I am unsure how binary search could help here though?
 
+You forgot the case where the root may not even possess two children nodes ( e.g. 2L1 )
+In this case, we may get an overlap ( e.g. 2R3 )
+This is still a valid operation, and the fringe may have involved the root here as well. Exert caution now!
+
 */
 class Solution 
 {
@@ -62,12 +68,14 @@ class Solution
         public Wrapper()
         {
             this.node = null;
-            min = Integer.MIN_VALUE;
-            max = Integer.MAX_VALUE;
+            min = 0;
+            max = 50001; // ma of 50,000
+            // min = Integer.MIN_VALUE;
+            // max = Integer.MAX_VALUE;
         }
         
         // The "this" keyword is really a self-referential pointer in the hiding
-        public Wrapper(TreeNode node, int min, int ma)
+        public Wrapper(TreeNode node, int min, int max)
         {
             this.node = node;
             this.min = min;
@@ -75,12 +83,13 @@ class Solution
         }
     }
     
+    // Range Info hashmap should be based on integers ... NOT on node addresses ( can cause a trip up with fringe analysis : leaf(1) != root(1) case ) 
     public TreeNode canMerge(List<TreeNode> trees) 
     {
         TreeNode newRoot = null;
         List<Wrapper> fringe = new ArrayList<Wrapper>();
         Queue<TreeNode> toExplore = new LinkedList<TreeNode>();  // abstract class needs a concrete class instantiation on the RHS
-        HashMap<TreeNode, Wrapper> rangeInfo = new HashMap<TreeNode, Wrapper>();
+        HashMap<Integer, Wrapper> rangeInfo = new HashMap<Integer, Wrapper>();
         Set<TreeNode> rootSet = new HashSet<TreeNode>();
         
         if(trees == null || trees.size() == 0)
@@ -95,7 +104,7 @@ class Solution
         {
             TreeNode cur = trees.get(i);
             Wrapper metadata = new Wrapper();
-            if(cur != null && !rangeInfo.containsKey(cur))
+            if(cur != null && !rangeInfo.containsKey(cur.val))
             {
                 metadata.node = cur;
                 if(cur.left != null)
@@ -106,21 +115,26 @@ class Solution
                 {
                     metadata.max = cur.right.val;
                 }
-                rangeInfo.put(cur, metadata);
+                rangeInfo.put(cur.val, metadata);
             }
             toExplore.add(cur);
         }
         
         // [3] Initialize the fringe and first root node, along with the root set
+        // Make sure the fringe itself is properly initialized here : we pass in these values later, depending on direction of add as well
         newRoot = trees.get(0);
         rootSet.add(newRoot);
         if(newRoot.left != null)
-            fringe.add(rangeInfo.get(newRoot.left));
+        {
+            fringe.add(new Wrapper(newRoot.left, 0, newRoot.val));
+        }
         if(newRoot.right != null)
-            fringe.add(rangeInfo.get(newRoot.right));
+        {
+            fringe.add(new Wrapper(newRoot.right, newRoot.val, 50001));
+        }
         
         // [4] The meat of our algorithm here
-//        List<Wrapper> fringe = new ArrayList<Wrapper>();
+//         List<Wrapper> fringe = new ArrayList<Wrapper>();
 //         Queue<TreeNode> toExplore = new LinkedList<TreeNode>();  // abstract class needs a concrete class instantiation on the RHS
 //         HashMap<TreeNode, Wrapper> rangeInfo = new HashMap<TreeNode, Wrapper>();
 //         Set<TreeNode> rootSet = new HashSet<TreeNode>();
@@ -135,30 +149,79 @@ class Solution
             }
             while(!fringe.isEmpty())
             {
-                Wrapper candidate = fringe.remove(0);
                 // If either children are null : well hey, they are infinites too. Leverage that as well.
-                TreeNode testNode = candidate.node; 
-                TreeNode lst = testNode.left;
-                TreeNode rst = testNode.right;
-                int testLeft = candidate.min;
-                int testMax = candidate.max;
-                if(rangeInfo.containsKey(testNode))
+                Wrapper fringeNode = fringe.remove(0);
+                TreeNode fringeNode = test.node; 
+                if(fringeNode == newRoot)
+                {
+                    continue; // ignore this case
+                }
+                int fringeMin = candidate.min;
+                int fringeMax = candidate.max;
+                if(rangeInfo.containsKey(fringeNode.val))
                 {
                     // Now perform range tests , as an appends is a possibility here
-                    // remember this : the append in itself is just the hashmaps left nad right too : why not just port that over?
+                    // remember this : the append in itself is just the hashmaps left and right too : why not just port that over?
+                    Wrapper connectee = rangeInfo.get(fringeNode.val);
+                    int connecteeMin = connectee.min;
+                    int connecteeMax = connectee.max;
                     
-                    // provided append tests pass : if not, return null root ( early termination ) 
-                    TreeNode parent = testNode;
-                    parent.left = testNode.left;
-                    parent.right = testNode.right;
-                    rangeInfo.remove(testNode); // we kick this mini BST out cuz it was concatenated here
+                    // Not sure about handling -INT_MIN, INT_MAX cases though. A bit lost there in the connection setup
+                    // Handle as single child or dual child cases instead ( you incorporated flag values 0,50001 for this ) 
+                    // wait a second .. on the fringe, you may have a case where it has a flag as well. Shit
+                    // If not, early halt with a null root
+                    if(connecteeMin == 0)
+                    {
+                        if(connecteeMax > fringeMax)
+                        {
+                            return null;
+                        }
+                    }
+                    else if ( connecteeMax == 50001)
+                    {
+                        if(connecteeMin < fringeMin)
+                        {
+                            return null;
+                        }
+                    }
+                    else
+                    {
+                         if (!( fringeMin < connecteeMin && connecteeMax < fringeMax ))
+                         {
+                            return null;
+                         }
+                    }
+                                          
+
+                    Wrapper fringeMeta = rangeInfo.get(fringeNode.val);
+                    TreeNode lst = fringeNode.left;
+                    TreeNode rst = fringeNode.right;    
+                    fringeNode.left = connectee.left;
+                    fringeNode.right = connectee.right;
+                    rangeInfo.remove(fringeNode.val); // we kick this mini BST out cuz it was concatenated here
                     
                     // Add the new fringe nodes now
-                    if(lst != null) fringe.add(rangeInfo.get(lst));
-                    if(rst != null) fringe.add(rangeInfo.get(rst));
+                    if(lst != null) 
+                    {
+                        Wrapper lstMeta = rangeInfo.get(lst.val);
+                        lstMeta.min = 0;
+                        lstMeta.max = fringeNode.val;
+                        fringe.add(lstMeta);
+                    }
+                    if(rst != null)
+                    {
+                        Wrapper rstMeta = rangeInfo.get(rst.val);
+                        rstMeta.min = fringeNode.val;
+                        rstMeta.max = 50001;
+                        fringe.add(rstMeta);
+                    }
                     
                     // Go update the root node's range information now
                     // Note : aways update according to the fringe valies anyways : as the depths represent a property too!
+                    // Oh but the root might also have a flag too. Be careful!
+                    Wrapper rootMeta = rangeInfo.get(newRoot);
+                    rootMeta.min = __;
+                    rootMeta.max = __;
                     
                     // Check if we need a new root node now
                     if(fringe.isEmpty())
@@ -169,11 +232,22 @@ class Solution
             }
             
             // Grow a seperate subtree, as the root set is empty here
+            // If node in to explore has already been checked : go ahead and skip it.
             if(fringe.isEmpty())
             {
                 if(!rootSet.contains(newRoot))
+                {
                     rootSet.add(newRoot);
+                }
                 newRoot = toExplore.poll(); 
+                if(rangeInfo.containsKey(newRoot))
+                {
+                    continue; // proceed to rest of iteration
+                }
+                else
+                {
+                    rootSet.add(newRoot); 
+                }
             }
         }
         
@@ -183,4 +257,3 @@ class Solution
         return newRoot;
     }
 }
-
