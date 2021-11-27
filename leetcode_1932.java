@@ -32,10 +32,12 @@ Time = ___
 Space = ___
 
 Node vals are known to be positives in range of [1,50000]
+[[3],[3,1]] is luckily invalid anyways!
 
 TEST CASES
-(A)
-(B)
+(A)[[2,1],[3,2,5],[5,4]] 
+(B) [[3],[4,3]]
+    [4,3] = expected
 (C)
 (D)
 (E)
@@ -122,8 +124,20 @@ class Solution
         
         // [3] Initialize the fringe and first root node, along with the root set
         // Make sure the fringe itself is properly initialized here : we pass in these values later, depending on direction of add as well
+        // Oh and make sure the root is part of the fringe set as well : hey we could get a bad case as well
+        // But the root case begets much caution too ... as this fringe is not guaranteed its emptiness
+        // One possibility : go fill that up, if possible , and then proceed with the legitimate fringe as expected
+        // Wait we need not add the root to the fringe -> as the root trees differ, and a fringe must be a leaf
+        // But what if the root HAS no leaves? 
+        // Well that is a special case indeed. Is in itself a frige at this point
+        
+        
         newRoot = trees.get(0);
         rootSet.add(newRoot);
+        if(newRoot.left == null && newRoot.right == null)
+        {
+            fringe.add(rangeInfo.get(newRoot.val));
+        }
         if(newRoot.left != null)
         {
             fringe.add(new Wrapper(newRoot.left, 0, newRoot.val));
@@ -150,21 +164,27 @@ class Solution
             while(!fringe.isEmpty())
             {
                 // If either children are null : well hey, they are infinites too. Leverage that as well.
-                Wrapper fringeNode = fringe.remove(0);
-                TreeNode fringeNode = test.node; 
+                Wrapper fringeWrapper = fringe.remove(0);
+                TreeNode fringeNode = fringeWrapper.node; 
                 if(fringeNode == newRoot)
                 {
                     continue; // ignore this case
                 }
-                int fringeMin = candidate.min;
-                int fringeMax = candidate.max;
+                // Go remove a former root, if we end up adding it anyways!
+                if(rootSet.contains(fringeNode))
+                {
+                    rootSet.remove(fringeNode);
+                }
+                int fringeMin = fringeWrapper.min;
+                int fringeMax = fringeWrapper.max;
                 if(rangeInfo.containsKey(fringeNode.val))
                 {
                     // Now perform range tests , as an appends is a possibility here
                     // remember this : the append in itself is just the hashmaps left and right too : why not just port that over?
-                    Wrapper connectee = rangeInfo.get(fringeNode.val);
-                    int connecteeMin = connectee.min;
-                    int connecteeMax = connectee.max;
+                    Wrapper connecteeMeta = rangeInfo.get(fringeNode.val);
+                    TreeNode connectee = connecteeMeta.node;
+                    int connecteeMin = connecteeMeta.min;
+                    int connecteeMax = connecteeMeta.max;
                     
                     // Not sure about handling -INT_MIN, INT_MAX cases though. A bit lost there in the connection setup
                     // Handle as single child or dual child cases instead ( you incorporated flag values 0,50001 for this ) 
@@ -220,8 +240,8 @@ class Solution
                     // Note : aways update according to the fringe valies anyways : as the depths represent a property too!
                     // Oh but the root might also have a flag too. Be careful!
                     Wrapper rootMeta = rangeInfo.get(newRoot);
-                    rootMeta.min = __;
-                    rootMeta.max = __;
+                    rootMeta.min = Math.min(rootMeta.min, fringeNode.val);
+                    rootMeta.max = Math.max(rootMeta.max, fringeNode.val);
                     
                     // Check if we need a new root node now
                     if(fringe.isEmpty())
@@ -240,7 +260,7 @@ class Solution
                     rootSet.add(newRoot);
                 }
                 newRoot = toExplore.poll(); 
-                if(rangeInfo.containsKey(newRoot))
+                if(!rangeInfo.containsKey(newRoot))
                 {
                     continue; // proceed to rest of iteration
                 }
@@ -253,7 +273,15 @@ class Solution
         
         if(rootSet.size() != 1)
             return null;
-        
         return newRoot;
     }
 }
+
+
+
+
+
+
+
+
+
