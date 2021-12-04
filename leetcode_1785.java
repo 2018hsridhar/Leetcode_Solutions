@@ -15,6 +15,9 @@ Limit bounded by [1,1,000,000]
 Goal bounded by [1,1,000,000,000] 
 
 Issue : may encounter TLE case!
+I am suspecting potential for data overflow here already !
+-> exert caution!
+-> please read the problem constraints better too!
 
 */
 
@@ -23,22 +26,31 @@ class Solution
 {
     public int minElements(int[] nums, int limit, int goal) 
     {
-        int sum = 0;
+        long sum = 0;
         int ops = 0;
-        for(int i : nums) sum += i;
-        int diff = 0;
-        if(goal > sum ) diff = Math.abs(goal - sum);
-        else if ( goal < sum ) diff = Math.abs(sum - goal);
+        for(int i : nums) 
+        {
+            sum += i;
+        }
+        // 100,000,000,000 vs 2,147,483,647
+        long diff = 0;
+        if(goal > sum ) 
+        {
+            diff = Math.abs((long)goal - sum);
+            ops = (int) (diff / limit);
+            if(diff % limit != 0)
+                ops++;
+            return ops;
+        }
+        else if ( goal < sum ) diff = Math.abs((long)sum - goal);
         else if ( goal == sum ) return 0; //premature computation
-        // System.out.printf("sum = %d\t Limit = %d\t Goal = %d\t diff = %d\n", sum, limit, goal, diff);
         while(diff > 0)
         {
             if(diff < limit) 
-                limit = diff;
+                limit = (int)diff;
             diff -= limit;
             ++ops;
         }
-        
         return ops;
     }
 }
