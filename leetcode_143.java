@@ -8,33 +8,48 @@
  *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
  * }
  */
-
-/*
-
-Can not modify the values in the list nodes
-Only the nodes ( that is, their pointers to other nodes ) can be changed here
-
-URL = https://leetcode.com/problems/reorder-list/
-143. Reorder List
-
-Complexity : 
-Let N := number of nodes
-Time = O(N)
-Space = O(1)
-
-Algorithm is an in-place modification
-Handle null or singleton SLLs too
-
-Leverage parity to thy advantage as well
-
-*/
-
 class Solution {
-    public void reorderList(ListNode head) 
-    {
-        if(head == null || head.next == null)
-            return;
-        
-        
+    public void reorderList(ListNode head) {
+        zipLinkedList(head);
     }
+    
+    public ListNode zipLinkedList(ListNode linkedList) 
+	{
+		// Trivial base cases
+		if(linkedList == null || linkedList.next == null)
+		{
+			return linkedList;
+		}
+		ListNode newHead = linkedList;
+		Stack<ListNode> revOrder = new Stack<ListNode>();
+		ListNode head = linkedList;
+		while(head != null)
+		{
+			revOrder.push(head);
+			head = head.next;
+		}
+		head = linkedList;
+		while(head != null || head.next != null)
+		{
+			if(head == revOrder.peek())
+			{
+				head.next = null;
+				break;
+			}
+			ListNode fwd = head.next;
+			ListNode topMost = revOrder.pop();
+			head.next = topMost;
+			// Even length case
+			if(topMost == fwd)
+			{
+				topMost.next = null;
+				break;
+			}
+			topMost.next = fwd;
+			head = fwd;
+		}
+		
+		return newHead;
+	}
+
 }
