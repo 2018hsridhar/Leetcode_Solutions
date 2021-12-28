@@ -39,6 +39,8 @@ TEST CASES :
     [] <- head points to NULL here
 (B) [0,0,0,0,0,1]
     [1] <- head points to final node
+    <- algo needs remedying: plz fix again
+    <- esp for the singleton case!
 (C) [1,5,2,6,2,3,9]
     [1,5,2,6,2,3,9] <- head points to start @ 1 ( no deletions took place )
 (D) [-1,-2,-3,-4,-5,15]
@@ -54,32 +56,83 @@ TEST CASES :
 (I)
 (J)
 
+You could write this all out into a seperate array, and do deletions accordingly -> but is kinda lousy practice
+to go recreating your list and NOT modifying it in place as well!
+Yes the algo requires constant addition and removal of keys here
 
 PSEUDOCODE :
 
-    HashMap<run_sum,node> HM = ()
+    Create sentinel node with zero val
+    sentinel next = head
+    HashMap<run_sum,node_address> HM = ()
     runSum = 0
     ptr = head
     while(ptr != null)
         runSum += ptr.val
         if(HM contains key runSum)
-        {
-        
-        }
-        else
-        {
+            Node prev = HM getVal(runSum)
+            Node temp = prev // preserve pointer here, after deleting the old keys here
+            int prevSum = HM getVal(prev)
+            while(prev != ptr)
+                if(HM containsKey prevSum)
+                    HM.remove(prevSum)
+                prev = prev.next
+                prevSum = HM getVal(prev)
+            temp.next = ptr.next    //  delete ptr node here as well
+            // Make sure runSum still maps to temp here
+            ptr = temp.next
+        else if ( HM does not contain key runSum )
             HM put tuple (runSum, ptr)
-        }
         ptr = ptr.next
-    
-    
+        
+    Node newHead = sentinel.next
+    return newHead
 
+
+Debug tactic : index the nodes as we traverse
 */
 
 class Solution 
 {
     public ListNode removeZeroSumSublists(ListNode head) 
     {
+        // Forgot to add sentinel to the hashmap too!
+        ListNode sentinel = new ListNode(0);
+        sentinel.next = head;
+        HashMap<Integer, ListNode> HM = new HashMap<Integer, ListNode>();
+        HM.put(0,sentinel);
         
+        int runSum = 0;
+        ListNode ptr = sentinel; // set to sentinel; not to head
+        while(ptr != null)
+        {
+            runSum += ptr.val;
+            if(HM.containsKey(runSum) == true )
+            {
+                System.out.printf("At a true case runSum = [%d]\n", runSum);
+                ListNode prev = HM.get(runSum);
+                ListNode temp = prev; // preserve pointer here, after deleting the old keys here
+                int prevSum = prev.val;
+                while(prev != ptr)
+                {
+                    if(HM.containsKey(prevSum))
+                    {
+                        HM.remove(prevSum);
+                    }
+                    prev = prev.next;
+                    prevSum = prevSum += prev.val;
+                }
+                temp.next = ptr.next;    //  delete ptr node here as well
+                // Make sure runSum still maps to temp here
+                ptr = temp.next;
+            }
+            else if ( HM.containsKey(runSum) == false)
+            {
+                HM.put(runSum, ptr);
+                ptr = ptr.next;
+            }
+        }
+        ListNode newHead = sentinel.next;
+        return newHead;
     }
 }
