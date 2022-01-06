@@ -19,6 +19,15 @@ TEST CASES :
 (D)
 (E)
 
+> depends on which character is under deletion here as well
+> is it an 'a' or a 'b'?
+> if we do not delete a 'b' : count #-a's deleted to right
+> if we do not delete a 'a' : count #-deletions to make the right balanced
+> if we delete either 'a' or 'b' : count #-deletions to make right balanced as well
+> we just concatenate after deletion anyways
+> see for 'b', the minima is # of a's on RHS to chuck out
+
+
 Leverage property : are we in a range of all a's, or all b's, at a given index too?
 Cuz at a certain point, the problem can simplify massively too!
 
@@ -42,21 +51,58 @@ PSEUDOCODE :
     if s points to null or len(s) <= 1
         ret 0
     n = len(s)
-    for each index in range(n-1,-1,-1):
-        
-
+    count_a_right = 0
+    if s[n-1] == 'a'
+        count_a_right += 1
+    for each index in range(n-2,-1,-1):
+        subproblem_dels = 0
+        char curEl = s[index]
+        if curEl == a :                     // rendered a NOP anyways
+            subproblem_dels = minDels   // just continue
+            count_a_right += 1
+        elif curEl == b:
+            subproblem_dels= min(1 + minDels,count_a_right)
+        minDels = subproblem_dels
     ret minDels
     
+TEST CASES
+(A) "ababaaabbbabababbbbbabababbaabaaaabbbbbababab" => 17 
+(B) "ababaaabbbabababbbbbabababababbaabababababbbababaaaabababababbbbbbbbbaaaaabababaaaaababababbbababababababbbababababbbbbbbbbaaaabbbaaabbaaaaabbbaaababbaabaaaabbbbbababab"  => 76
+
+Yeah you were right :-)
+
 */
 
 class Solution 
 {
     public int minimumDeletions(String s) 
     {
-        int minDeletions = 0;
-        return minDeletions;
-        
-        
-        
+        int minDels = 0;
+        if(s == null || s.length() <= 1)
+        {
+            return 0;
+        }
+        int n = s.length();
+        int count_a_right = 0;
+        if(s.charAt(n-1) == 'a')
+        {
+            count_a_right = 1;
+        }
+        for(int i = n-2; i >= 0; --i)
+        {
+            int subproblem_dels = 0;
+            char curEl = s.charAt(i);
+            if(curEl == 'a')                     // rendered a NOP anyways
+            {
+                subproblem_dels = minDels;   // just continue
+                count_a_right += 1;
+            }
+            else if(curEl == 'b')
+            {
+                subproblem_dels= Math.min(1 + minDels,count_a_right);
+            }
+            minDels = subproblem_dels;
+        }
+        return minDels;
     }
 }
