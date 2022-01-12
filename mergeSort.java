@@ -273,3 +273,149 @@ class Program
 	}
 }												
 					
+
+
+import java.util.*;
+
+class Triplet
+{
+	public int low;
+	public int high;
+	public boolean solved;
+	
+	public Triplet(int low, int high, boolean solved)
+	{
+		this.low = low;
+		this.high = high;
+		this.solved = solved;
+	}
+	
+	public Triplet(){}
+	
+	public String toString()
+	{
+		String format = String.format("low,high,solved = [%d,%d,%s]", low, high, solved);
+		return format;
+	}
+}
+
+class Program 
+{
+  public static int[] mergeSort(int[] array) 
+	{
+   	iterativeMergeSort(array);
+		return array;
+  }
+	
+	// List<Integer> triplet -> (low,high,)
+	// Push TRUE if the subproblem itself be a singleton array anyways as well? Investigate this!
+	private static void iterativeMergeSort(int[] A)
+	{
+			int low = 0;
+			int high = A.length - 1;
+			Stack<Triplet> stk = new Stack<Triplet>();
+			Triplet initProblem = new Triplet(low,high,false);
+			stk.push(initProblem);
+			while(!stk.isEmpty())
+			{
+				Triplet curProblem = stk.pop();	// right problem ( pushLeft, pushRight)
+				int cLow = curProblem.low;
+				int cHigh = curProblem.high;
+				if(stk.size() == 0)
+				{
+					if(curProblem.solved == true || cLow == cHigh)
+					{
+						break;	 
+					}
+					else
+					{
+							stk.push(curProblem);	// forgot to add back!
+							int mid = curProblem.low + (curProblem.high - curProblem.low)/2;
+							Triplet leftProblem = new Triplet(curProblem.low,mid,false);
+							Triplet rightProblem = new Triplet(mid + 1,curProblem.high,false);
+							stk.push(leftProblem);
+							stk.push(rightProblem);
+					}
+				}
+				else if ( stk.size() >= 1 )
+			 	{
+					if(curProblem.solved == true)
+					{
+						Triplet nextProblem = stk.pop();
+						if(nextProblem.solved == true)
+						{
+							int nLow = Math.min(curProblem.low,nextProblem.low);
+							int nHigh = Math.max(curProblem.high,nextProblem.high);
+							// Suspect potential for bug here : but beware
+							merge(A,nLow,(nLow+nHigh)/2,nHigh);	// mid known :-) ( is it nextProblem)?
+							// merge(A,nLow,curProblem.high,nHigh);	// mid known :-) ( is it nextProblem)?
+							Triplet biggerProblem = new Triplet(nLow,nHigh,true);	
+							stk.pop();
+							stk.push(biggerProblem);
+						}
+						else
+						{
+							stk.push(curProblem);
+							stk.push(nextProblem);
+						}
+					}
+					else if ( curProblem.solved == false)	// Break into subproblems
+					{
+							if(cLow == cHigh)
+							{
+								curProblem.solved = true;
+								stk.push(curProblem);
+							}
+							else
+							{
+								stk.push(curProblem);
+								int mid = cLow + (cHigh-cLow)/2;
+								Triplet leftProblem = new Triplet(curProblem.low,mid,false);
+								Triplet rightProblem = new Triplet(mid + 1,curProblem.high,false);
+								stk.push(leftProblem);
+								stk.push(rightProblem);
+							}
+					}
+			 	}
+			}
+	}
+	// Post order : left->right->root
+	// Stack with (low,high) and keep dividing
+	// [(0,8,F)] -> [(0,4,F),(5,8,F),...] -> [(0,4,F),(5,6,F),(7,8,F),...]
+	// First stack element is merged but second stack element is not merged -> merge
+	// [(0,4),S:(5,8)]
+	
+	
+	private static void merge(int[] A, int low, int mid, int high)
+	{
+		int sz = high-low+1;
+		int temp[] = new int[sz];
+		int ptr1 = low;					// Get addressing correct!
+		int ptr2 = mid + 1;
+		int k = 0;
+		// Sizes of merged subarray scould be dissimilar ( odd length case )
+		while(ptr1 <= mid || ptr2 <= high)
+		{
+			if(ptr1 <= mid && ptr2 <= high)
+			{
+				if(A[ptr1] <= A[ptr2])
+					temp[k++] = A[ptr1++];
+				else
+					temp[k++] = A[ptr2++];
+			}
+			else if (ptr1 <= mid)
+			{
+				temp[k++] = A[ptr1++];
+			}
+			else if (ptr2 <= high)
+			{
+				temp[k++] = A[ptr2++];
+			}
+		}
+		// Write back to the input Array
+		for(int i = 0; i < temp.length; ++i)
+		{
+			A[low + i] = temp[i];
+		}
+	}
+}
