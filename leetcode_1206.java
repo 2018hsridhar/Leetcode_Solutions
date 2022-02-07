@@ -12,8 +12,17 @@ Add             O(lgN)         O(N)
 Erase           O(lgN)         O(N)
 
 TEST CASES :
-(A)
-(B)
+(A) ["Skiplist","add","add","add","add","add","add","add","add","add","add","add","add"]
+[[],[1],[2],[3],[4],[5],[6],[1],[2],[3],[4],[5],[6]]
+=> seems ok, but not too meaningful : needs search too!
+=> numLevels seems fine too : test for that as well!
+=> incorporate search() into removal as well : lever this!
+=> DLL makes list removal so easy too! Now I see :-(
+-> is doable via SLL, but will prove cumbersome a bit :-(
+(B) ["Skiplist","add","add","add","add","add","add","add","add","add","add","add","add","search","search"]
+[[],[1],[2],[3],[4],[5],[6],[1],[2],[3],[4],[5],[6],[0],[3]]
+    => search seems fine
+    => erasure entails difficulty
 (C)
 (D)
 (E)
@@ -40,6 +49,7 @@ class Skiplist
     Node HEAD;
     int numLevels;
     double prob = 0.5; // a constant
+    boolean hasFirstElem;
     
     // Node member class for linked lists
     // we need to point up or down a node here as well -> point down?
@@ -70,11 +80,43 @@ class Skiplist
         // Special logic if head points to null anyways ( the singleton case ) 
         HEAD = new Node();
         numLevels = 1;
+        hasFirstElem = false;
     }
     
     public boolean search(int target) 
     {
-        
+        Node cur = HEAD;
+        boolean foundElem = false;
+        while(cur != null)
+        {
+            if(target == cur.val)
+            {
+                foundElem = true;
+                break;
+            }
+            else
+            {
+                if(cur.next == null)
+                {
+                    if(cur.bellow != null)
+                        cur = cur.bellow;
+                    else
+                        break;
+                }
+                else
+                {
+                    if(target < cur.next.val)   // Careful on the inequality here to
+                    {
+                        cur = cur.bellow;
+                    }
+                    else if ( target >= cur.next.val )
+                    {
+                        cur = cur.next;
+                    }
+                }
+            }
+        }
+        return foundElem;
     }
     
     // Incorporate randomness here
@@ -84,9 +126,10 @@ class Skiplist
     // REMEMBER :-> we must always hit rock bottom in the isnertion as well!
     public void add(int num) 
     {
-        if(HEAD.next == null)
+        if(hasFirstElem == false)
         {
             HEAD.val = num;
+            hasFirstElem = true;
             return;
         }
         else
@@ -98,7 +141,7 @@ class Skiplist
                 // CONDITIONAL LOGIC preceding POINTER iteration. Notice this ordering
                 // Hang on -> what if truly at last element insertion too!
                 // For ANY drop below, a comparison to the NEXT element is still a must too! ( of said below ) 
-                if(cur.next = null)
+                if(cur.next == null)
                 {
                     dropHeads.add(cur);
                     if(cur.bellow != null)
@@ -138,9 +181,9 @@ class Skiplist
             Node toAdd = new Node(num,null,null);
             toAdd.next = cur.next;
             cur.next = toAdd;
-            levels = dropHeads.size();
+            int numLevels = dropHeads.size();
             boolean hitCeil = true;
-            for(int a = 1; a < levels; ++a)
+            for(int a = 1; a < numLevels; ++a)
             {
                 // We have a stopping condition as well too!
                 double coinToss = (int)Math.round(Math.random());
@@ -151,7 +194,7 @@ class Skiplist
                 }
                 else if ( coinToss == 1)
                 {
-                    Node myHead = dropHeads.get(levels - 1 - a);
+                    Node myHead = dropHeads.get(numLevels - 1 - a);
                     Node novel = new Node(num,null,toAdd);
                     novel.next = myHead.next;
                     myHead.next = novel;
@@ -161,16 +204,18 @@ class Skiplist
             }
             if(hitCeil == true)
             {
-                Node newHEAD = new Node(HEAD.val,null,HEAD)
+                Node newHEAD = new Node(HEAD.val,null,HEAD);
                 HEAD = newHEAD;
+                numLevels++;
             }
+            // System.out.printf("For the add operation, numLevels = [%d]\n", numLevels);
         }
     }
     
     // This the harder one too
     public boolean erase(int num) 
     {
-        
+        return false;
     }
 }
 
