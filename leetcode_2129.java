@@ -3,21 +3,23 @@ URL = https://leetcode.com/problems/capitalize-the-title/
 2129. Capitalize the Title
 
 AntiPattern : we do not always need to store the return values of functions.
-
+To expedite
+1. Avoid heap allocation of objects
+2. Leverage library methods
+3. Do not always store the return values of functions.
 */
 class Solution {
     public String capitalizeTitle(String title) {
-        StringBuilder capitalized = new StringBuilder("");
         String[] words = title.split("\\s+");
-        for(String el : words)
-        {
-            capitalized.append(convert(el));
-            capitalized.append("\s");
-        }
-        return capitalized.toString().trim();
+        String[] replace = new String[words.length];
+        for(int i = 0; i < words.length; ++i)
+            replace[i] = convert(words[i]);
+        // Let us invoke Java's <String> library instead
+        // We can `prealloc` mem too!
+        return String.join(" ", replace);
     }
     
-    private StringBuilder convert(String input)
+    private String convert(String input)
     {
         StringBuilder capitalized = new StringBuilder("");
         if(input.length() <= 2)
@@ -31,7 +33,7 @@ class Solution {
                 capitalized.append(toLowerCase(input.charAt(i)));
             }
         }
-        return capitalized;
+        return capitalized.toString();
     }
     
     private char toUpperCase(char input){
