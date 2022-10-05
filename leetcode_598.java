@@ -33,40 +33,15 @@ Test Cases
 */
 class Solution {
     public int maxCount(int m, int n, int[][] ops) {
-        int maxCount = 0;
         if(ops.length == 0) {
             return m * n; // special case here
         }
-        // Sort ranges greatest to least here ( both orders decreasing too ) 
-        Arrays.sort(ops, new Comparator<int[]>(){
-            public int compare(int[] rangeOne, int[] rangeTwo){
-                if(rangeOne[0] < rangeTwo[0])
-                    return 1;
-                else if ( rangeOne[0] > rangeTwo[0])
-                    return -1;
-                else {
-                    if(rangeOne[1] < rangeTwo[1]){
-                        return 1;
-                    } else if ( rangeOne[1] > rangeTwo[1]){
-                        return -1;
-                    } return 0;
-                }
-            }          
-        });
-        int p = ops.length;
-        // Leverage the `top left` corner here
-        // break out of while loop properly
-        // but keep a notion of a max count correct at least before resetting a current count
-        int[] rangeCur = ops[0]; // first range under consid : the original
-        int curCount = rangeCur[0] * rangeCur[1]; // de facto start here : assume entire matrix can incr
-        int i = 1;        
-        while(i < p){
-            int[] rangeTwo = ops[i];
-            rangeCur[0] = Math.min(rangeCur[0],rangeTwo[0]);
-            rangeCur[1] = Math.min(rangeCur[1],rangeTwo[1]);
-            curCount = rangeCur[0] * rangeCur[1];
-            ++i;
+        int minX = Integer.MAX_VALUE;
+        int minY = Integer.MAX_VALUE;
+        for(int i = 0; i < ops.length; ++i){
+            minX = Math.min(minX,ops[i][0]);
+            minY = Math.min(minY,ops[i][1]);
         }
-        return curCount;
+        return minX * minY;
     }
 }
