@@ -1,0 +1,7 @@
+# 627. Swap Salary
+# Write your MySQL query statement below
+# only one update statement
+# IF cond case sensitive
+# https://stackoverflow.com/questions/603835/mysql-simple-way-to-toggle-a-value-of-an-int-field
+# Control Flow function
+UPDATE Salary SET sex = IF(Sex='m','f','m');
