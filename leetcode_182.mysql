@@ -1,0 +1,9 @@
+# Write your MySQL query statement below
+# https://leetcode.com/problems/duplicate-emails/
+# 182. Duplicate Emails
+# aggr group by always together?
+# can have standalone GROUP BY
+# has to be a HAVING : not a WHERE
+SELECT Person.email from Person
+GROUP BY Person.email
+HAVING COUNT(Person.email) > 1;
