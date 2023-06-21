@@ -1,0 +1,14 @@
+# Write your MySQL query statement below
+# Ignore `transacted_on` column
+# SUM aggregate function on amount
+# https://stackoverflow.com/questions/200200/can-you-use-an-alias-in-the-where-clause-in-mysql
+# 1587. Bank Account Summary II
+SELECT Users.name as name, SUM(Transactions.amount) AS balance
+FROM Users
+INNER JOIN Transactions
+ON (Users.account = Transactions.account)
+GROUP BY name
+HAVING balance > 10000;
+# GROUP BY is always placed after the WHERE clause
+# https://stackoverflow.com/questions/6734276/how-to-combine-group-by-order-by-and-having
+# ORDER : GROUP BY -> HAVING
