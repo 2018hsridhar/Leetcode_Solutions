@@ -1,0 +1,11 @@
+# Write your MySQL query statement below
+# https://leetcode.com/problems/list-the-products-ordered-in-a-period/
+# 1327. List the Products Ordered in a Period
+# https://stackoverflow.com/questions/36105812/unknown-column-in-having-clause
+SELECT Products.product_name as product_name, SUM(Orders.unit) as unit FROM Products
+LEFT JOIN Orders
+ON Products.product_id = Orders.product_id
+WHERE (Orders.order_date >= '2020-02-01' AND Orders.order_date < '2020-03-01') 
+GROUP BY product_name
+HAVING unit >= 100;
+# how to work with the type <date> in mysql
