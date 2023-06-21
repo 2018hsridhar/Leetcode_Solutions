@@ -1,0 +1,9 @@
+# 1484. Group Sold Products By The Date
+# Write your MySQL query statement below
+# https://www.tutorialspoint.com/mysql-query-to-return-all-items-in-a-single-row#:~:text=Here%20is%20the%20query%20to%20return%20all%20items,DemoTable1355%3B%20This%20will%20produce%20the%20following%20output%20%E2%88%92
+# Is also called an `implosion`
+# How to get the unique products count too? hmmm - gotta be distinct
+# DISTINCT * no work : DISTINCT <...ONE ITEM...>
+# https://leetcode.com/problems/group-sold-products-by-the-date/description/
+SELECT Activities.sell_date, COUNT(DISTINCT Activities.product) AS num_sold, group_concat( DISTINCT Activities.product ORDER BY Activities.product ASC SEPARATOR ',') AS products FROM Activities
+GROUP BY Activities.sell_date;
