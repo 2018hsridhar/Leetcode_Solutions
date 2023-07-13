@@ -1,0 +1,24 @@
+/*
+N can be 100,000
+Ints up to pow(10,9) only ... i wonder why?
+Prefixes -> run sum methods
+
+URL = https://leetcode.com/problems/find-the-score-of-all-prefixes-of-an-array/
+2640. Find the Score of All Prefixes of an Array
+
+*/
+func findPrefixScore(nums []int) []int64 {
+    prefixScores := []int64{}
+    runConvScore := int64(0)
+    // mathematical consts in math package
+    // Never seen a complaint for math package const undefined
+    // myMaxEl := math.MinFloat64 // are floats only for positive values?
+    myMaxEl := math.SmallestNonzeroFloat64
+    for i := 0; i < len(nums); i++ {
+        myMaxEl = math.Max(myMaxEl, (float64)(nums[i]))
+        newElScore := (int64)(nums[i]) + (int64)(myMaxEl)
+        runConvScore += newElScore
+        prefixScores = append(prefixScores, runConvScore)
+    }
+    return prefixScores
+}
