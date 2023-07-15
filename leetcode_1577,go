@@ -1,0 +1,42 @@
+/*
+URL := https://leetcode.com/problems/number-of-ways-where-square-of-number-is-equal-to-product-of-two-numbers/
+1577. Number of Ways Where Square of Number Is Equal to Product of Two Numbers
+
+Can avoid sort on the inputs
+Lengths not that big -> supports poly time
+10^10 max in value -> no data overflow
+all >= 1 no negative-zero handling
+
+M := len(nums1)
+N := len(nums2)
+Time := O(MN^2) + O(NM^2)
+    (1e3)^3 := 1e9 * 2 = 2e9 operations max
+Space := O(1) ( IMP & EXP ) 
+
+Range loops preferred over non-range loops
+Discard is informative to the readers of GoLang
+
+*/
+func numTriplets(nums1 []int, nums2 []int) int {
+    numTrip := 0
+    numTrip += countTriplets(nums1,nums2)
+    numTrip += countTriplets(nums2,nums1)
+    return numTrip
+}
+
+// Use of package desired over non-package code too
+func countTriplets(nums1 []int, nums2 []int) int {
+    countTrip := 0
+    for _, el := range nums1 {
+        elSquare := (int)(el * el)
+        for i := 0; i < len(nums2); i++ {
+            for j := i+1; j < len(nums2); j++ {
+                prodNums2 := nums2[i] * nums2[j]
+                if prodNums2 == elSquare {
+                    countTrip++
+                }
+            }
+        }
+    }
+    return countTrip
+}
