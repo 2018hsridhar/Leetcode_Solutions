@@ -1,0 +1,60 @@
+/*
+URL := https://leetcode.com/problems/count-good-meals/
+1711. Count Good Meals
+
+storage initially -> then modulo only @ end to fit into the data
+Variation of 2sum with combinatorics layered on the top
+
+Max deliciousness of pow(2,20)
+Summ max = 2*pow(2,20) = pow(2,21)
+bound is known
+
+Complexity
+Let N := len(input)
+Time := O(NlgN) ( sorted sortedKeys op ) + O(N) ( meat of algo ) 
+Space := O(N) ( EXP ) O(1) ( IMP ) all input values unique
+
+Oh no deliciousness can zero out too -> take note
+And take note of repetition : 3+3 = 6 type of reasonings too
+
+time = 15 minutes to solution :-) 
+
+*/
+func countPairs(deliciousness []int) int {
+    numPairs := float64(0.0)
+    modulo := math.Pow(10,9) + float64(7.0)
+    freqMap := make(map[float64]float64)
+    for _, v := range deliciousness {
+        freqMap[(float64)(v)]++
+    }
+    // stop paranthesizing those types in the make built-ins
+    sortedKeys := make([]float64,0)
+    for k, _ := range freqMap {
+        sortedKeys = append(sortedKeys, k)
+    }
+    sort.Float64s(sortedKeys)
+    // Wait : only go up by a half -> no 2x count
+    // const #-operations here.
+    // for exp := 0; exp <= 21; exp++ {
+    for exp := 0; exp <= 21; exp++ {
+        powerOfTwo := math.Pow(2,(float64)(exp))
+        midPoint := powerOfTwo / 2.0 
+        // wait a sec these sortedKeys are not sorted -> hang on
+        for _, k := range sortedKeys {
+            delta := powerOfTwo - k
+            if delta < midPoint {
+                break
+            } 
+            if _, ok := freqMap[delta]; ok {
+                if(delta != k) {
+                    numPairs += freqMap[delta] * freqMap[k]
+                } else if ( delta == k ) {
+                    // [3,3,3,3] => 4(3) * 3(3) type of combo ( n * (n-1) / 2)
+                    numPairs += freqMap[delta] * (freqMap[delta] - 1) * 0.5
+                }
+            }
+        }
+    }
+    // return (int)(numPairs % modulo)
+    return (int)(math.Mod(numPairs,modulo))
+}
